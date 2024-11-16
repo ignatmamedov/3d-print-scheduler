@@ -39,11 +39,4 @@ PrinterManager ..> StandardFDM
 PrinterManager ..> HousedPrinter
 PrinterManager ..> MultiColor
 PrinterManager ..> FilamentType
-
-
-
-
-
-
-
 @enduml
