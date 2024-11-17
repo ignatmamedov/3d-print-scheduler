@@ -32,9 +32,6 @@ class PrintTask {
 }
 
 enum FilamentType {
-  PLA
-  PETG
-  ABS
 }
 
 ' Relationships
@@ -61,8 +58,9 @@ StandardFDM ..> Print : uses
 
 HousedPrinter --|> StandardFDM
 MultiColor --|> StandardFDM
+MultiColor "1" o--> "1..4" Spool: uses
 
-PrintTask "1" o-- "1" Print : contains
+PrintTask "1" o-- "1" Print : has
 PrintTask --> FilamentType : uses
 
 Spool --> FilamentType : uses
