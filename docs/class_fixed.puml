@@ -1,38 +1,23 @@
 @startuml
-
 ' Entry Point Class
-class Main <<entry point>> {
-}
+class Main <<entry point>>
 
 ' Core Manager Class
-class PrinterManager {
-}
+class PrinterManager
 
-' Abstract Printer Class and Subclasses
-abstract class Printer {
-}
-
-class StandardFDM {
-}
-
-class HousedPrinter {
-}
-
-class MultiColor {
-}
+enum FilamentType
+class HousedPrinter
+class MultiColor
 
 ' Supporting Classes
-class Print {
-}
+class Print
 
-class Spool {
-}
+' Abstract Printer Class and Subclasses
+abstract class Printer
 
-class PrintTask {
-}
-
-enum FilamentType {
-}
+class PrintTask
+class Spool
+class StandardFDM
 
 ' Relationships
 Main "1" o-- "1" PrinterManager : has
@@ -49,20 +34,20 @@ PrinterManager ..> StandardFDM : uses
 PrinterManager ..> HousedPrinter : uses
 PrinterManager ..> MultiColor : uses
 
-Printer ..> Spool : uses
-Printer ..> Print : uses
-
-StandardFDM --|> Printer
-StandardFDM "1" o-- "1" Spool : owns
-StandardFDM ..> Print : uses
-
 HousedPrinter --|> StandardFDM
+
 MultiColor --|> StandardFDM
 MultiColor "1" o--> "1..4" Spool: uses
+
+Printer ..> Spool : uses
+Printer ..> Print : uses
 
 PrintTask "1" o-- "1" Print : has
 PrintTask --> FilamentType : uses
 
 Spool --> FilamentType : uses
 
+StandardFDM --|> Printer
+StandardFDM "1" o-- "1" Spool : owns
+StandardFDM ..> Print : uses
 @enduml
