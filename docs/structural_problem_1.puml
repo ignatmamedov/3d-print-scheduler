@@ -1,0 +1,34 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+class HousedPrinter
+class MultiColor {
+  - maxColors: int
+  + toString(): String
+   currentSpools: Spool[]
+   maxColors: int
+}
+class Printer {
+  - id: int
+  - name: String
+  + printFits(Print): boolean
+  + toString(): String
+  + CalculatePrintTime(String): int
+   name: String
+   id: int
+   currentSpools: Spool[]
+}
+class StandardFDM {
+  - currentSpool: Spool
+  + CalculatePrintTime(String): int
+  + toString(): String
+  + printFits(Print): boolean
+   currentSpools: Spool[]
+   currentSpool: Spool
+}
+
+HousedPrinter  -[#000082,plain]-^  StandardFDM
+MultiColor     -[#000082,plain]-^  StandardFDM
+StandardFDM    -[#000082,plain]-^  Printer
+@enduml
