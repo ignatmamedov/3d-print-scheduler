@@ -90,6 +90,7 @@ public class Main {
 
     }
 
+    //TODO strategy pattern
     // This method only changes the name but does not actually work.
     // It exists to demonstrate the output.
     // in the future strategy might be added.

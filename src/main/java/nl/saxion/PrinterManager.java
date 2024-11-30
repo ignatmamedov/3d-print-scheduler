@@ -14,6 +14,7 @@ public class PrinterManager {
     private List<PrintTask> pendingPrintTasks = new ArrayList<>();
     private Map<Printer, PrintTask> runningPrintTasks = new HashMap();
 
+    //
     public void addPrinter(int id, int printerType, String printerName, String manufacturer, int maxX, int maxY, int maxZ, int maxColors) {
         if (printerType == 1) {
             StandardFDM printer = new StandardFDM(id, printerName, manufacturer, maxX, maxY, maxZ);
