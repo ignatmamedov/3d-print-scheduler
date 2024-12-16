@@ -48,18 +48,4 @@ public class StandardFDM extends Printer implements SpoolManager{
     public List<Spool> getCurrentSpools() {
         return List.of(currentSpool);
     }
-
-    @Override
-    public String toString() {
-        String result = super.toString();
-        String append = "- maxX: " + maxX + System.lineSeparator() +
-                "- maxY: " + maxY + System.lineSeparator() +
-                "- maxZ: " + maxZ + System.lineSeparator();
-        if (currentSpool != null) {
-            append += "- Spool(s): " + currentSpool.getId() + System.lineSeparator();
-        }
-        append += "--------";
-        result = result.replace("--------", append);
-        return result;
-    }
 }

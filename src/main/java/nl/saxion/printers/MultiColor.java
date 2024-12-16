@@ -49,15 +49,4 @@ public class MultiColor extends Printer implements SpoolManager{
     public List<Spool> getCurrentSpools() {
         return currentSpools;
     }
-
-    @Override
-    public String toString(){
-        String result = super.toString();
-        String spools = "";
-        for (Spool spool : currentSpools) {
-            spools += spool.toString() + System.lineSeparator();
-        }
-        result += "- maxColors: " + maxColors + System.lineSeparator() + spools;
-        return result;
-    }
 }
