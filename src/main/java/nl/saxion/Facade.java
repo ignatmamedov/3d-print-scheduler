@@ -3,51 +3,48 @@ package nl.saxion;
 import nl.saxion.handlers.PrintTaskHandler;
 import nl.saxion.handlers.PrinterHandler;
 import nl.saxion.handlers.SpoolHandler;
+import nl.saxion.new_test_classes.PrintManagerRefactored;
 
 public class Facade {
-    private final PrintTaskHandler printTaskHandler;
-    private final PrinterHandler printerHandler;
-    private final SpoolHandler spoolHandler;
+    private final PrintManagerRefactored printManager;
 
     public Facade() {
-        this.printTaskHandler = new PrintTaskHandler();
-        this.printerHandler = new PrinterHandler();
-        this.spoolHandler = new SpoolHandler();
+        this.printManager = new PrintManagerRefactored();
     }
 
     public void addNewPrintTask() {
-        //printTaskHandler.addNewPrintTask();
+        //printManager.addNewPrintTask();
     }
 
     public void registerPrintCompletion() {
-        //printTaskHandler.registerPrintCompletion();
+        //printManager.registerPrintCompletion();
     }
 
     public void registerPrinterFailure() {
-        //printerHandler.registerPrinterFailure();
+        //printManager.registerPrinterFailure();
     }
 
     public void changePrintStrategy() {
-        //printerHandler.changePrintStrategy();
+        //printManager.changePrintStrategy();
     }
 
     public void startPrintQueue() {
-        //spoolHandler.startPrintQueue();
+        //printManager.startPrintQueue();
     }
 
     public void showPrints() {
-        //printTaskHandler.showPrints();
+        //printManager.showPrints();
     }
 
     public void showPrinters() {
-        //printerHandler.showPrinters();
+        //printManager.showPrinters();
     }
 
     public void showSpools() {
-        //spoolHandler.showSpools();
+        //printManager.showSpools();
     }
 
     public void showPendingPrintTasks() {
-        //printTaskHandler.showPendingPrintTasks();
+        //printManager.showPendingPrintTasks();
     }
 }

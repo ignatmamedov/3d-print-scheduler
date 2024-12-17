@@ -24,7 +24,7 @@ public class MenuHandler {
         this.userInput = userInput;
     }
 
-    public void menu() {
+    public void displayMenu() {
         System.out.println("------------- Menu ----------------");
         for (String option : DEFAULT_MENU_OPTIONS) {
             System.out.println("- " + option);

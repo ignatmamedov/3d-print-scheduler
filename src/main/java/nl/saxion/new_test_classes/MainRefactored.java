@@ -15,37 +15,37 @@ public class MainRefactored {
     public void run(String[] args) {
         int choice = 1;
         while (choice > 0 && choice < 10) {
-            menuHandler.menu();
+            menuHandler.displayMenu();
             choice = menuHandler.getMenuChoice();
             switch (choice) {
                 case 0:
                     break;
                 case 1:
-//                    facade.addNewPrintTask();
+                    facade.addNewPrintTask();
                     break;
                 case 2:
-//                    facade.registerPrintCompletion();
+                    facade.registerPrintCompletion();
                     break;
                 case 3:
-//                    facade.registerPrinterFailure();
+                    facade.registerPrinterFailure();
                     break;
                 case 4:
-//                    facade.changePrintStrategy();
+                    facade.changePrintStrategy();
                     break;
                 case 5:
-//                    facade.startPrintQueue();
+                    facade.startPrintQueue();
                     break;
                 case 6:
-//                    facade.showPrints();
+                    facade.showPrints();
                     break;
                 case 7:
-//                    facade.showPrinters();
+                    facade.showPrinters();
                     break;
                 case 8:
-//                    facade.showSpools();
+                    facade.showSpools();
                     break;
                 case 9:
-//                    facade.showPendingPrintTasks();
+                    facade.showPendingPrintTasks();
                     break;
             }
         }
