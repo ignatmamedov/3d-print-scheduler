@@ -5,8 +5,8 @@ import nl.saxion.input.ConsoleInput;
 import nl.saxion.menu.MenuHandler;
 
 public class MainRefactored {
-    private final Facade facade = new Facade();
     private final MenuHandler menuHandler = new MenuHandler(new ConsoleInput());
+    private final Facade facade = new Facade(menuHandler);
 
     public static void main(String[] args) {
         new nl.saxion.Main().run(args);
@@ -15,6 +15,7 @@ public class MainRefactored {
     public void run(String[] args) {
         int choice = 1;
         while (choice > 0 && choice < 10) {
+            // display menu should return string
             menuHandler.displayMenu();
             choice = menuHandler.getMenuChoice();
             switch (choice) {

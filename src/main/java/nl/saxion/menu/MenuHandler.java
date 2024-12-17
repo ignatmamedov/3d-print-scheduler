@@ -32,6 +32,28 @@ public class MenuHandler {
         System.out.println("-----------------------------------");
     }
 
+    public String displayOptions(List<String> menuOptions, String title) {
+        StringBuilder menu = new StringBuilder();
+        menu.append("-------------");
+        menu.append(title);
+        menu.append("----------------\n");
+        for (String option : menuOptions) {
+            menu.append("- ").append(option).append("\n");
+        }
+        menu.append("-----------------------------------");
+        return menu.toString();
+    }
+
+    public String displayOptions(List<String> menuOptions) {
+        StringBuilder menu = new StringBuilder();
+        menu.append("-----------------------------\n");
+        for (String option : menuOptions) {
+            menu.append("- ").append(option).append("\n");
+        }
+        menu.append("-----------------------------------");
+        return menu.toString();
+    }
+
     public int getMenuChoice() {
         return userInput.getIntInput(0, 9);
     }
