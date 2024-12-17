@@ -1,8 +1,5 @@
 package nl.saxion;
 
-import nl.saxion.handlers.PrintTaskHandler;
-import nl.saxion.handlers.PrinterHandler;
-import nl.saxion.handlers.SpoolHandler;
 import nl.saxion.new_test_classes.PrintManagerRefactored;
 
 public class Facade {
