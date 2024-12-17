@@ -1,13 +1,13 @@
 package reader;
 
 import models.Print;
-import models.Printer;
+import models.PrinterFactory;
 import models.Spool;
+import nl.saxion.Models.Printer;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.function.Function;
-import java.util.List;
 
 public class Mapper {
     ISourceAdapter sourceAdapter;
@@ -35,12 +35,12 @@ public class Mapper {
         return readAll(Print::fromMap);
     }
 
-//    public Iterator<Spool> readSpools() {
-//        return readAll(Spool::fromMap);
-//    }
-//
-//    public Iterator<Printer> readPrinters() {
-//        return readAll(Printer::fromMap);
-//    }
+    public Iterator<Spool> readSpools() {
+        return readAll(Spool::fromMap);
+    }
+
+    public Iterator<Printer> readPrinters() {
+        return readAll(PrinterFactory::fromMap);
+    }
 }
 
