@@ -1,11 +1,18 @@
 package nl.saxion.new_test_classes;
 
+import facade.PrintDTO;
 import nl.saxion.Facade;
 import nl.saxion.input.ConsoleInput;
 import nl.saxion.input.UserInput;
+import view.TerminalView;
+import view.View;
+
+import java.util.Iterator;
 
 public class MainRefactored {
     private final UserInput consoleInput = new ConsoleInput();
+
+    private final View<String> terminal = new TerminalView();
     private final Facade facade = new Facade();
 
     public static void main(String[] args) {
@@ -27,31 +34,12 @@ public class MainRefactored {
                 case 3 -> facade.registerPrinterFailure();
                 case 4 -> facade.changePrintStrategy();
                 case 5 -> facade.startPrintQueue();
-                case 6 -> facade.showPrints();
+                case 6 -> showPrints();
                 case 7 -> facade.showPrinters();
                 case 8 -> facade.showSpools();
                 case 9 -> facade.showPendingPrintTasks();
             }
         }
-    }
-
-    public void addNewPrintTask() {
-        System.out.println(facade.getPrints());
-        int printChoice = consoleInput.getIntInput(1, facade.getPrintSize());
-
-        System.out.println(facade.getFilamentTypesOptions());
-        int filamentType = consoleInput.getIntInput(1, 3);
-
-        System.out.println(facade.getColorsOptions(filamentType));
-
-        facade.prepareSelectedColorsList();
-        for (int i = 0; i < facade.getFilamentColorsNumber(printChoice); i++) {
-            System.out.println(facade.getColorsOptions());
-            int colorChoice = consoleInput.getIntInput(1, facade.getColorsSize());
-            facade.addSelectedColors(colorChoice);
-        }
-
-        facade.addNewPrintTask(printChoice, filamentType);
     }
 
     public void readData(String[] args){
@@ -64,8 +52,36 @@ public class MainRefactored {
             facade.readSpoolsFromFile(spoolsFile, true);
             facade.readPrintersFromFile(printersFile, true);
         } catch (Exception e) {
-            System.err.println("Failed to read files");
+            terminal.show("Failed to read files");
             e.printStackTrace();
+        }
+    }
+
+    public void addNewPrintTask() {
+        terminal.show(facade.getAvailablePrints());
+        int printChoice = consoleInput.getIntInput(1, facade.getPrintSize());
+
+        terminal.show(facade.getFilamentTypesOptions());
+        int filamentType = consoleInput.getIntInput(1, 3);
+
+        terminal.show(facade.getColorsOptions(filamentType));
+
+        facade.prepareSelectedColorsList();
+        for (int i = 0; i < facade.getFilamentColorsNumber(printChoice); i++) {
+            terminal.show(facade.getColorsOptions());
+            int colorChoice = consoleInput.getIntInput(1, facade.getColorsSize());
+            facade.addSelectedColors(colorChoice);
+        }
+
+        facade.addNewPrintTask(printChoice, filamentType);
+    }
+
+    public void showPrints(){
+        terminal.show("---------- Available prints ----------");
+        for (Iterator<PrintDTO> it = facade.getPrints(); it.hasNext(); ) {
+            PrintDTO printDTO = it.next();
+            terminal.show(terminal.formatPrintDTO(printDTO));
+            terminal.show("--------------------------------------");
         }
     }
 }
