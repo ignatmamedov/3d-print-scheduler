@@ -3,7 +3,6 @@ package nl.saxion.new_test_classes;
 import dataprovider.DataProvider;
 import nl.saxion.Models.FilamentType;
 import models.Print;
-import nl.saxion.Models.PrintTask;
 import models.Spool;
 import nl.saxion.handlers.PrintTaskHandler;
 import nl.saxion.handlers.PrinterHandler;
@@ -81,6 +80,10 @@ public class PrintManagerRefactored {
 
     public void showPrints() {
         printTaskHandler.showPrints();
+    }
+
+    public List<Print> getPrints(){
+        return prints;
     }
 
     public void showPrinters() {

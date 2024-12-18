@@ -1,10 +1,13 @@
 package nl.saxion;
 
+import facade.PrintDTO;
+import models.Print;
 import nl.saxion.menu.MenuPrinter;
 import nl.saxion.new_test_classes.PrintManagerRefactored;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Facade {
@@ -39,8 +42,10 @@ public class Facade {
         //printManager.startPrintQueue();
     }
 
-    public void showPrints() {
-        //printManager.showPrints();
+    public Iterator<PrintDTO> getPrints() {
+        return printManager.getPrints().stream()
+                .map(Print::toDTO)
+                .iterator();
     }
 
     public void showPrinters() {
@@ -55,7 +60,7 @@ public class Facade {
         //printManager.showPendingPrintTasks();
     }
 
-    public String getPrints(){
+    public String getAvailablePrints(){
         prints = printManager.getAvailablePrints().stream().map(printTask -> printTask.getName()).toList();
         printSize = prints.size();
         return menuPrinter.displayOptions(prints, "Prints");
