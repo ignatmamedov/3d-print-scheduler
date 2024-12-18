@@ -1,4 +1,4 @@
-package nl.saxion.menu;
+package menu;
 
 import java.util.List;
 
@@ -18,13 +18,14 @@ public class MenuPrinter {
             "0) Exit"
     );
 
-//TODO: returns string in this method
-    public void displayMenu() {
-        System.out.println("------------- Menu ----------------");
+    public String displayMenu() {
+        StringBuilder menu = new StringBuilder();
+        menu.append("------------- Menu ----------------\n");
         for (String option : DEFAULT_MENU_OPTIONS) {
-            System.out.println("- " + option);
+            menu.append("- ").append(option).append("\n");
         }
-        System.out.println("-----------------------------------");
+        menu.append("-----------------------------------");
+        return menu.toString();
     }
 
     public String displayOptions(List<String> menuOptions, String title) {
@@ -35,6 +36,26 @@ public class MenuPrinter {
         for (String option : menuOptions) {
             menu.append("- ").append(option).append("\n");
         }
+        menu.append("-----------------------------------");
+        return menu.toString();
+    }
+
+    public String displayOptions(List<String> menuOptions, String title, boolean showOptionIndex) {
+        StringBuilder menu = new StringBuilder();
+        menu.append("-------------");
+        menu.append(title);
+        menu.append("----------------\n");
+
+        if (showOptionIndex) {
+            for (int i = 0; i < menuOptions.size(); i++) {
+                menu.append(i + 1).append(") ").append(menuOptions.get(i)).append("\n");
+            }
+        } else {
+            for (String option : menuOptions) {
+                menu.append("- ").append(option).append("\n");
+            }
+        }
+
         menu.append("-----------------------------------");
         return menu.toString();
     }

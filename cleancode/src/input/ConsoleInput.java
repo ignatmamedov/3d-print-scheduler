@@ -1,6 +1,5 @@
-package nl.saxion.input;
+package input;
 
-import java.util.Optional;
 import java.util.Scanner;
 
 public class ConsoleInput implements UserInput{
@@ -12,7 +11,11 @@ public class ConsoleInput implements UserInput{
     }
 
     @Override
-    public int getIntInput(Integer min, Integer max) {
+    public int getIntInput(String message, Integer min, Integer max) {
+        if(message != null) {
+            System.out.println(message);
+        }
+        
         int input;
         while (true) {
             try {
@@ -35,6 +38,6 @@ public class ConsoleInput implements UserInput{
 
     @Override
     public int getIntInput() {
-        return getIntInput(null, null);
+        return getIntInput(null, null, null);
     }
 }

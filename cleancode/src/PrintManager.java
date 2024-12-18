@@ -1,19 +1,17 @@
-package nl.saxion.new_test_classes;
-
 import dataprovider.DataProvider;
-import nl.saxion.Models.FilamentType;
+import handlers.PrintTaskHandler;
+import handlers.PrinterHandler;
+import handlers.SpoolHandler;
 import models.Print;
 import models.Spool;
-import nl.saxion.handlers.PrintTaskHandler;
-import nl.saxion.handlers.PrinterHandler;
-import nl.saxion.handlers.SpoolHandler;
+import nl.saxion.Models.FilamentType;
 import printers.Printer;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrintManagerRefactored {
+public class PrintManager {
     private final PrintTaskHandler printTaskHandler;
     private final PrinterHandler printerHandler;
     private final SpoolHandler spoolHandler;
@@ -22,7 +20,7 @@ public class PrintManagerRefactored {
     private List<Print> prints;
     List<Printer> printers;
 
-    public PrintManagerRefactored() {
+    public PrintManager() {
         this.printTaskHandler = new PrintTaskHandler();
         this.printerHandler = new PrinterHandler();
         this.spoolHandler = new SpoolHandler();
@@ -30,8 +28,7 @@ public class PrintManagerRefactored {
     }
 
     public List<Print> getAvailablePrints() {
-//        return printTaskHandler.getAvailablePrints(); or just return a list of prints
-        return null;
+        return List.copyOf(prints);
     }
 
     public void addNewPrintTask(String printName, int filamentType, List<String> colors) {
@@ -51,15 +48,22 @@ public class PrintManagerRefactored {
         }
     }
 
-    public List<String> getAvailableColors(FilamentType type, int colorChoice) {
-        List<String> availableColors = new ArrayList<>();
-        for (Spool spool : spools) {
-            if (spool.getFilamentType() == type && !availableColors.contains(spool.getColor())) {
-                availableColors.add(spool.getColor());
-            }
-        }
+    public List<String> getAvailableColors(int filamentType) {
+        try {
+            FilamentType type = getFilamentType(filamentType);
 
-        return List.of(availableColors.get(colorChoice - 1));
+            List<String> availableColors = new ArrayList<>();
+            for (Spool spool : spools) {
+                if (spool.getFilamentType() == type && !availableColors.contains(spool.getColor())) {
+                    availableColors.add(spool.getColor());
+                }
+            }
+
+            return availableColors;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     public void registerPrintCompletion() {

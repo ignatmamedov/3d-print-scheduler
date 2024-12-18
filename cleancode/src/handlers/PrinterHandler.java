@@ -1,4 +1,4 @@
-package nl.saxion.handlers;
+package handlers;
 
 import java.util.List;
 

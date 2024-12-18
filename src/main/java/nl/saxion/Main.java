@@ -1,8 +1,8 @@
 package nl.saxion;
 
 import nl.saxion.Models.*;
-import nl.saxion.input.ConsoleInput;
-import nl.saxion.menu.MenuPrinter;
+import input.ConsoleInput;
+import menu.MenuPrinter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

@@ -1,4 +1,4 @@
-package nl.saxion.handlers;
+package handlers;
 
 import nl.saxion.Models.PrintTask;
 import nl.saxion.Models.Printer;

@@ -1,13 +1,10 @@
 package nl.saxion;
 
-import facade.PrintDTO;
-import models.Print;
 import nl.saxion.menu.MenuPrinter;
 import nl.saxion.new_test_classes.PrintManagerRefactored;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Facade {
@@ -63,7 +60,7 @@ public class Facade {
     public String getAvailablePrints(){
         prints = printManager.getAvailablePrints().stream().map(printTask -> printTask.getName()).toList();
         printSize = prints.size();
-        return menuPrinter.displayOptions(prints, "Prints");
+        return menuPrinter.displayOptions(prints, "Prints", true);
     }
 
     public Integer getPrintSize(){
@@ -74,20 +71,17 @@ public class Facade {
        return menuPrinter.displayOptions(List.of("PLA", "PETG", "ABS"), "Filament Types ");
     }
 
-    public String getColorsOptions(Integer filamentType){
-        colors = printManager.getAvailableColors(printManager.getFilamentType(filamentType), 1);
-        return menuPrinter.displayOptions(colors, "Colors");
+    public String getColorsOptions(Integer filamentType) {
+        colors = printManager.getAvailableColors(filamentType);
+        List<String> colorsWithFilament = colors.stream().map(color -> color + " (" + printManager.getFilamentType(filamentType) + ")").toList();
+        return menuPrinter.displayOptions(colorsWithFilament, "Colors", true);
     }
 
     public Integer getFilamentColorsNumber(Integer printChoice){
         return printManager.getAvailablePrints().get(printChoice - 1).getFilamentLength().size();
     }
 
-    public String getColorsOptions(){
-        return menuPrinter.displayOptions(colors, "Colors");
-    }
-
-    public Integer getColorsSize(){
+    public Integer getColorsSize() {
         return colors.size();
     }
 
@@ -100,15 +94,15 @@ public class Facade {
     }
 
     public void addNewPrintTask(Integer printChoice, Integer filamentType) {
-        printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, colors);
+        printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, selectedColors);
     }
 
-    public void displayMenu(){
-     //  return menuPrinter.displayMenu();
+    public String displayMenu() {
+        return menuPrinter.displayMenu();
     }
 
     public void readPrintsFromFile(String filename, boolean header) throws FileNotFoundException {
-            printManager.readPrints(filename, header);
+        printManager.readPrints(filename, header);
     }
 
     public void readSpoolsFromFile(String filename, boolean header) throws FileNotFoundException {
