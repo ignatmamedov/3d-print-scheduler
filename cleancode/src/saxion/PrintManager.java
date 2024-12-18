@@ -5,6 +5,7 @@ import saxion.handlers.PrintTaskHandler;
 import saxion.handlers.PrinterHandler;
 import saxion.handlers.SpoolHandler;
 import saxion.models.Print;
+import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
 import saxion.types.FilamentType;
@@ -43,6 +44,10 @@ public class PrintManager {
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
+    }
+
+    public List<PrintTask> getPendingPrintTasks(){
+        return printTaskHandler.getPendingPrintTasks();
     }
 
     private Print getPrintByName(String printName) {

@@ -1,5 +1,6 @@
 package saxion.models;
 
+import saxion.facade.PrintTaskDTO;
 import saxion.types.FilamentType;
 
 import java.util.List;
@@ -27,9 +28,7 @@ public class PrintTask {
     public Print getPrint(){
         return print;
     }
-
-    @Override
-    public String toString() {
-        return "< " + print.getName() +" " + filamentType + " " + colors.toString() + " >";
+    public PrintTaskDTO toDTO(){
+        return new PrintTaskDTO(print.getName(), colors, filamentType);
     }
 }
