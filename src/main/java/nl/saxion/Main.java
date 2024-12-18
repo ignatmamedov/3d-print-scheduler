@@ -27,7 +27,7 @@ public class Main {
     }
 
     public void run(String[] args) {
-        if(args.length > 0) {
+        if (args.length > 0) {
             readPrintsFromFile(args[0]);
             readSpoolsFromFile(args[1]);
             readPrintersFromFile(args[2]);
@@ -113,9 +113,9 @@ public class Main {
         System.out.println("- 2: Efficient Spool Usage");
         System.out.println("- Choose strategy: ");
         int strategyChoice = consoleInput.getIntInput(1, 2);
-        if(strategyChoice == 1) {
+        if (strategyChoice == 1) {
             printStrategy = "- Less Spool Changes";
-        } else if( strategyChoice == 2) {
+        } else if (strategyChoice == 2) {
             printStrategy = "- Efficient Spool Usage";
         }
         System.out.println("-----------------------------------");
@@ -125,10 +125,10 @@ public class Main {
     private void registerPrintCompletion() {
         List<Printer> printers = manager.getPrinters();
         System.out.println("---------- Currently Running Printers ----------");
-        for(Printer p: printers) {
-            PrintTask printerCurrentTask= manager.getPrinterCurrentTask(p);
-            if(printerCurrentTask != null) {
-                System.out.println("- " + p.getId() + ": " +p.getName() + " - " + printerCurrentTask);
+        for (Printer p : printers) {
+            PrintTask printerCurrentTask = manager.getPrinterCurrentTask(p);
+            if (printerCurrentTask != null) {
+                System.out.println("- " + p.getId() + ": " + p.getName() + " - " + printerCurrentTask);
             }
         }
         System.out.print("- Printer that is done (ID): ");
@@ -140,10 +140,10 @@ public class Main {
     private void registerPrinterFailure() {
         List<Printer> printers = manager.getPrinters();
         System.out.println("---------- Currently Running Printers ----------");
-        for(Printer p: printers) {
-            PrintTask printerCurrentTask= manager.getPrinterCurrentTask(p);
-            if(printerCurrentTask != null) {
-                System.out.println("- " + p.getId() + ": " +p.getName() + " > " + printerCurrentTask);
+        for (Printer p : printers) {
+            PrintTask printerCurrentTask = manager.getPrinterCurrentTask(p);
+            if (printerCurrentTask != null) {
+                System.out.println("- " + p.getId() + ": " + p.getName() + " > " + printerCurrentTask);
             }
         }
         System.out.print("- Printer ID that failed: ");
@@ -197,7 +197,7 @@ public class Main {
         counter = 1;
         for (Spool spool : spools) {
             String colorString = spool.getColor();
-            if(type == spool.getFilamentType() && !availableColors.contains(colorString)) {
+            if (type == spool.getFilamentType() && !availableColors.contains(colorString)) {
                 System.out.println("- " + counter + ": " + colorString + " (" + spool.getFilamentType() + ")");
                 availableColors.add(colorString);
                 counter++;
@@ -205,11 +205,11 @@ public class Main {
         }
         System.out.print("- Color number: ");
         int colorChoice = consoleInput.getIntInput(1, availableColors.size());
-        colors.add(availableColors.get(colorChoice-1));
-        for(int i = 1; i < print.getFilamentLength().size(); i++) {
+        colors.add(availableColors.get(colorChoice - 1));
+        for (int i = 1; i < print.getFilamentLength().size(); i++) {
             System.out.print("- Color number: ");
             colorChoice = consoleInput.getIntInput(1, availableColors.size());
-            colors.add(availableColors.get(colorChoice-1));
+            colors.add(availableColors.get(colorChoice - 1));
         }
         System.out.println("--------------------------------------");
 
@@ -241,7 +241,7 @@ public class Main {
         for (Printer p : printers) {
             String output = p.toString();
             PrintTask currentTask = manager.getPrinterCurrentTask(p);
-            if(currentTask != null) {
+            if (currentTask != null) {
                 output = output.replace("--------", "- Current Print Task: " + currentTask + System.lineSeparator() +
                         "--------");
             }
@@ -261,7 +261,7 @@ public class Main {
 
     private void readPrintsFromFile(String filename) {
         JSONParser jsonParser = new JSONParser();
-        if(filename.length() == 0) {
+        if (filename.length() == 0) {
             filename = "prints.json";
         }
         URL printResource = getClass().getResource("/" + filename);
@@ -281,7 +281,7 @@ public class Main {
                 JSONArray fLength = (JSONArray) print.get("filamentLength");
                 int printTime = ((Long) print.get("printTime")).intValue();
                 ArrayList<Double> filamentLength = new ArrayList();
-                for(int i = 0; i < fLength.size(); i++) {
+                for (int i = 0; i < fLength.size(); i++) {
                     filamentLength.add(((Double) fLength.get(i)));
                 }
                 manager.addPrint(name, height, width, length, filamentLength, printTime);
@@ -293,7 +293,7 @@ public class Main {
 
     private void readPrintersFromFile(String filename) {
         JSONParser jsonParser = new JSONParser();
-        if(filename.length() == 0) {
+        if (filename.length() == 0) {
             filename = "printers.json";
         }
         URL printersResource = getClass().getResource("/" + filename);
@@ -322,7 +322,7 @@ public class Main {
 
     private void readSpoolsFromFile(String filename) {
         JSONParser jsonParser = new JSONParser();
-        if(filename.length() == 0) {
+        if (filename.length() == 0) {
             filename = "spools.json";
         }
         URL spoolsResource = getClass().getResource("/" + filename);

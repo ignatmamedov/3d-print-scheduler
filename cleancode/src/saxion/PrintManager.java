@@ -132,6 +132,23 @@ public class PrintManager {
         printTaskHandler.registerPrintCompletion();
     }
 
+    public String getRunningPrintTasks(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("---------- Currently Running Printers ----------\n");
+        for (Printer p : printers) {
+            PrintTask printerCurrentTask = printTaskHandler.getPrintTaskByPrinter(p);
+            if (printerCurrentTask != null) {
+                sb.append("- ").append(p.getId()).append(": ").append(p.getName()).append(" - ").append(printerCurrentTask).append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public int getRunningPrintTasksSize() {
+        return printTaskHandler.getRunningPrintTasksSize();
+    }
+
     public void registerPrinterFailure() {
         printerHandler.registerPrinterFailure();
     }
@@ -144,10 +161,6 @@ public class PrintManager {
         printTaskHandler.startPrintQueue();
     }
 
-    public void showPrints() {
-        printTaskHandler.showPrints();
-    }
-
     public List<Print> getPrints() {
         return prints;
     }
@@ -158,13 +171,6 @@ public class PrintManager {
 
     public List<Printer> getPrinters(){
         return printers;
-    }
-    public void showPrinters() {
-        printerHandler.showPrinters();
-    }
-
-    public void showSpools() {
-        spoolHandler.showSpools();
     }
 
     public void showPendingPrintTasks() {

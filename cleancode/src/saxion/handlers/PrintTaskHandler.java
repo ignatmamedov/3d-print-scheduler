@@ -2,6 +2,7 @@ package saxion.handlers;
 
 import saxion.models.Print;
 import saxion.models.PrintTask;
+import saxion.printers.MultiColor;
 import saxion.printers.Printer;
 import saxion.types.FilamentType;
 
@@ -32,10 +33,6 @@ public class PrintTaskHandler {
 
     public void startPrintQueue() {
         // Start the print queue
-    }
-
-    public void showPrints() {
-        // Show the prints
     }
 
     public void showPendingPrintTasks() {
