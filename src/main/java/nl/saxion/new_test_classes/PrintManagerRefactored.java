@@ -1,13 +1,16 @@
 package nl.saxion.new_test_classes;
 
+import dataprovider.DataProvider;
 import nl.saxion.Models.FilamentType;
-import nl.saxion.Models.Print;
+import models.Print;
 import nl.saxion.Models.PrintTask;
-import nl.saxion.Models.Spool;
+import models.Spool;
 import nl.saxion.handlers.PrintTaskHandler;
 import nl.saxion.handlers.PrinterHandler;
 import nl.saxion.handlers.SpoolHandler;
+import printers.Printer;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +18,16 @@ public class PrintManagerRefactored {
     private final PrintTaskHandler printTaskHandler;
     private final PrinterHandler printerHandler;
     private final SpoolHandler spoolHandler;
-    private final List<Spool> spools = new ArrayList<>();
-    // DataGenerator (factory)
+    private final DataProvider dataProvider;
+    private List<Spool> spools;
+    private List<Print> prints;
+    List<Printer> printers;
 
     public PrintManagerRefactored() {
         this.printTaskHandler = new PrintTaskHandler();
         this.printerHandler = new PrinterHandler();
         this.spoolHandler = new SpoolHandler();
+        this.dataProvider = new DataProvider();
     }
 
     public List<Print> getAvailablePrints() {
@@ -89,7 +95,27 @@ public class PrintManagerRefactored {
         printTaskHandler.showPendingPrintTasks();
     }
 
-    public void addSpools(){}
+    public void readSpools(String filename, boolean header) throws FileNotFoundException {
+        if (filename.isEmpty()) {
+            filename = dataProvider.DEFAULT_SPOOLS_FILE;
+        }
+        spools = dataProvider.readFromFile(filename, Spool.class, header);
+    }
+
+    public void readPrints(String filename, boolean header) throws FileNotFoundException {
+        if (filename.isEmpty()) {
+            filename = dataProvider.DEFAULT_PRINTS_FILE;
+        }
+        prints = dataProvider.readFromFile(filename, Print.class, header);
+    }
+
+    public void readPrinters(String filename, boolean header) throws FileNotFoundException {
+        if (filename.isEmpty()) {
+            filename = dataProvider.DEFAULT_PRINTERS_FILE;
+        }
+        printers = dataProvider.readFromFile(filename, Printer.class, header);
+    }
+
 
     public void addPrinters(){}
 

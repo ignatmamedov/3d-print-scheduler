@@ -13,6 +13,8 @@ public class MainRefactored {
     }
 
     public void run(String[] args) {
+        readData(args);
+
         int choice = 1;
         while (choice > 0 && choice < 10) {
             // display menu should return string
@@ -50,5 +52,20 @@ public class MainRefactored {
         }
 
         facade.addNewPrintTask(printChoice, filamentType);
+    }
+
+    public void readData(String[] args){
+        String printsFile = args.length > 0 ? args[0] : "";
+        String spoolsFile = args.length > 1 ? args[1] : "";
+        String printersFile = args.length > 2 ? args[2] : "";
+
+        try {
+            facade.readPrintsFromFile(printsFile, true);
+            facade.readSpoolsFromFile(spoolsFile, true);
+            facade.readPrintersFromFile(printersFile, true);
+        } catch (Exception e) {
+            System.err.println("Failed to read files");
+            e.printStackTrace();
+        }
     }
 }

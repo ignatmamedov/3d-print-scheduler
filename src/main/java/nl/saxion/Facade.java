@@ -3,6 +3,7 @@ package nl.saxion;
 import nl.saxion.menu.MenuPrinter;
 import nl.saxion.new_test_classes.PrintManagerRefactored;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,4 +102,15 @@ public class Facade {
      //  return menuPrinter.displayMenu();
     }
 
+    public void readPrintsFromFile(String filename, boolean header) throws FileNotFoundException {
+            printManager.readPrints(filename, header);
+    }
+
+    public void readSpoolsFromFile(String filename, boolean header) throws FileNotFoundException {
+        printManager.readSpools(filename, header);
+    }
+
+    public void readPrintersFromFile(String filename, boolean header) throws FileNotFoundException {
+        printManager.readPrinters(filename, header);
+    }
 }
