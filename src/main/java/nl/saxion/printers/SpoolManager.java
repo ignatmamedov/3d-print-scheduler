@@ -1,4 +1,4 @@
-package printers;
+package nl.saxion.printers;
 
 import nl.saxion.Models.Spool;
 

@@ -31,7 +31,7 @@ public class StandardFDM extends Printer {
 
     public Spool[] getCurrentSpools() {
         Spool[] spools = new Spool[1];
-        if(currentSpool != null) {
+        if (currentSpool != null) {
             spools[0] = currentSpool;
         }
         return spools;
@@ -54,7 +54,7 @@ public class StandardFDM extends Printer {
                 "- maxY: " + maxY + System.lineSeparator() +
                 "- maxZ: " + maxZ + System.lineSeparator();
         if (currentSpool != null) {
-            append += "- Spool(s): " + currentSpool.getId()+ System.lineSeparator();
+            append += "- Spool(s): " + currentSpool.getId() + System.lineSeparator();
         }
         append += "--------";
         result = result.replace("--------", append);

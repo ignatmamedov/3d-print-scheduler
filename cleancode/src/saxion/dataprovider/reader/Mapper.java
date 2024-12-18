@@ -1,4 +1,4 @@
-package dataprovider.reader;
+package saxion.dataprovider.reader;
 
 
 import java.util.HashMap;

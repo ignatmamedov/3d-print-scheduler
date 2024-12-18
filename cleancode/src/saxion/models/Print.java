@@ -1,4 +1,6 @@
-package models;
+package saxion.models;
+
+import saxion.facade.PrintDTO;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +11,7 @@ import java.util.List;
 public class Print {
     private String name;
     private int height;
+
     private int width;
     private int length;
     private ArrayList<Double> filamentLength;
@@ -23,23 +26,11 @@ public class Print {
         this.printTime = printTime;
     }
 
-    @Override
-    public String toString() {
-        return "--------" + System.lineSeparator() +
-                "- Name: " + name + System.lineSeparator() +
-                "- Height: " + height + System.lineSeparator() +
-                "- Width: " + width + System.lineSeparator() +
-                "- Length: " + length + System.lineSeparator() +
-                "- FilamentLength: " + filamentLength + System.lineSeparator() +
-                "- Print Time: " + printTime + System.lineSeparator() +
-                "--------";
-    }
-
     public String getName() {
         return name;
     }
 
-    public double getLength() {
+    public int getLength() {
         return length;
     }
 
@@ -73,6 +64,10 @@ public class Print {
                 .toList());
 
         return new Print(name, height, width, length, filamentLength, printTime);
+    }
+
+    public PrintDTO toDTO(){
+        return new PrintDTO(name, height, width, length, filamentLength, printTime);
     }
 
 

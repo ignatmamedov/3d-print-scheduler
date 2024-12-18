@@ -1,10 +1,10 @@
-package dataprovider;
+package saxion.dataprovider;
 
-import dataprovider.reader.JsonAdapter;
-import dataprovider.reader.CsvAdapter;
-import dataprovider.reader.Mapper;
-import dataprovider.reader.SourceAdapter;
-import utils.FileProvider;
+import saxion.dataprovider.reader.JsonAdapter;
+import saxion.dataprovider.reader.CsvAdapter;
+import saxion.dataprovider.reader.Mapper;
+import saxion.dataprovider.reader.SourceAdapter;
+import saxion.utils.FileProvider;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
@@ -14,12 +14,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import models.Print;
-import models.Spool;
-import printers.Printer;
-import printers.PrinterFactory;
+import saxion.models.Print;
+import saxion.models.Spool;
+import saxion.printers.Printer;
+import saxion.printers.PrinterFactory;
 
 public class DataProvider {
+    public final String DEFAULT_SPOOLS_FILE = "spools.json";
+    public final String DEFAULT_PRINTS_FILE = "prints.json";
+    public final String DEFAULT_PRINTERS_FILE = "printers.json";
     private SourceAdapter sourceAdapter;
     private final HashMap<Class<?>, Function<HashMap<String, Object>, ?>> typeMappers = new HashMap<>();
 
@@ -48,11 +51,21 @@ public class DataProvider {
         return this.loadData(m -> m.readEntities(mapper, true));
     }
 
-    public <T> List<T> readCSV(String filename, boolean header, Class<T> type) throws FileNotFoundException {
+    public <T> List<T> readCSV(String filename,  Class<T> type, boolean header) throws FileNotFoundException {
         Reader reader = FileProvider.getReaderFromResource(filename);
         sourceAdapter = new CsvAdapter(reader);
         Function<HashMap<String, Object>, T> mapper = getMapper(type);
         return this.loadData(m -> m.readEntities(mapper, header));
+    }
+
+    public <T> List<T> readFromFile(String filename, Class<T> type, boolean header) throws FileNotFoundException {
+        if (filename.endsWith(".csv")) {
+            return readCSV(filename, type, header);
+        } else if (filename.endsWith(".json")) {
+            return readJson(filename, type);
+        } else {
+            throw new IllegalArgumentException("Invalid file extension. Supported extensions are .csv and .json");
+        }
     }
 
     public <T> List<T> loadData(Function<Mapper, Iterator<T>> readMethod) {
@@ -62,7 +75,6 @@ public class DataProvider {
         while (iterator.hasNext()) {
             T item = iterator.next();
             result.add(item);
-            System.out.println(item.toString());
         }
         return result;
     }

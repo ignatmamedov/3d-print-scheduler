@@ -14,6 +14,7 @@ public class PrinterManager {
     private List<PrintTask> pendingPrintTasks = new ArrayList<>();
     private Map<Printer, PrintTask> runningPrintTasks = new HashMap();
 
+    //TODO Factory Pattern here
     public void addPrinter(int id, int printerType, String printerName, String manufacturer, int maxX, int maxY, int maxZ, int maxColors) {
         if (printerType == 1) {
             StandardFDM printer = new StandardFDM(id, printerName, manufacturer, maxX, maxY, maxZ);
@@ -34,6 +35,7 @@ public class PrinterManager {
         return list.stream().anyMatch(o -> o.getColor().equals(name));
     }
 
+    //TODO use Strategy pattern to select the right printer (?)
     public void selectPrintTask(Printer printer) {
         Spool[] spools = printer.getCurrentSpools();
         PrintTask chosenTask = null;

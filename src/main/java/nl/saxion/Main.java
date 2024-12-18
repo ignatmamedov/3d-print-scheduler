@@ -1,25 +1,24 @@
 package nl.saxion;
 
 import nl.saxion.Models.*;
+import saxion.input.ConsoleInput;
+import saxion.menu.MenuPrinter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import javax.print.DocFlavor;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Main {
-    Scanner scanner = new Scanner(System.in);
-    private PrinterManager manager = new PrinterManager();
+    private final PrinterManager manager = new PrinterManager();
+    private final ConsoleInput consoleInput = new ConsoleInput();
+    private final MenuPrinter menuPrinter = new MenuPrinter();
 
     private String printStrategy = "Less Spool Changes";
 
@@ -40,28 +39,41 @@ public class Main {
         int choice = 1;
         while (choice > 0 && choice < 10) {
             menu();
-            choice = menuChoice(9);
+            choice = consoleInput.getIntInput(1, 9);
             System.out.println("-----------------------------------");
-            if (choice == 1) {
-                addNewPrintTask();
-            } else if (choice == 2) {
-                registerPrintCompletion();
-            } else if (choice == 3) {
-                registerPrinterFailure();
-            } else if (choice == 4) {
-                changePrintStrategy();
-            } else if (choice == 5) {
-                startPrintQueue();
-            } else if (choice == 6) {
-                showPrints();
-            } else if (choice == 7) {
-                showPrinters();
-            } else if (choice == 8) {
-                showSpools();
-            } else if (choice == 9) {
-                showPendingPrintTasks();
+            switch (choice) {
+                case 0:
+                    break;
+                case 1:
+                    addNewPrintTask();
+                    break;
+                case 2:
+                    registerPrintCompletion();
+                    break;
+                case 3:
+                    registerPrinterFailure();
+                    break;
+                case 4:
+                    changePrintStrategy();
+                    break;
+                case 5:
+                    startPrintQueue();
+                    break;
+                case 6:
+                    showPrints();
+                    break;
+                case 7:
+                    showPrinters();
+                    break;
+                case 8:
+                    showSpools();
+                    break;
+                case 9:
+                    showPendingPrintTasks();
+                    break;
             }
         }
+
         exit();
     }
 
@@ -90,6 +102,7 @@ public class Main {
 
     }
 
+    //TODO strategy pattern
     // This method only changes the name but does not actually work.
     // It exists to demonstrate the output.
     // in the future strategy might be added.
@@ -99,7 +112,7 @@ public class Main {
         System.out.println("- 1: Less Spool Changes");
         System.out.println("- 2: Efficient Spool Usage");
         System.out.println("- Choose strategy: ");
-        int strategyChoice = numberInput(1, 2);
+        int strategyChoice = consoleInput.getIntInput(1, 2);
         if(strategyChoice == 1) {
             printStrategy = "- Less Spool Changes";
         } else if( strategyChoice == 2) {
@@ -119,7 +132,7 @@ public class Main {
             }
         }
         System.out.print("- Printer that is done (ID): ");
-        int printerId = numberInput(-1, printers.size());
+        int printerId = consoleInput.getIntInput(-1, printers.size());
         System.out.println("-----------------------------------");
         manager.registerCompletion(printerId);
     }
@@ -134,7 +147,7 @@ public class Main {
             }
         }
         System.out.print("- Printer ID that failed: ");
-        int printerId = numberInput(1, printers.size());
+        int printerId = consoleInput.getIntInput(1, printers.size());
 
         manager.registerPrinterFailure(printerId);
         System.out.println("-----------------------------------");
@@ -152,7 +165,7 @@ public class Main {
         }
 
         System.out.print("- Print number: ");
-        int printNumber = numberInput(1, prints.size());
+        int printNumber = consoleInput.getIntInput(1, prints.size());
         System.out.println("--------------------------------------");
         Print print = manager.findPrint(printNumber - 1);
         String printName = print.getName();
@@ -161,7 +174,7 @@ public class Main {
         System.out.println("- 2: PETG");
         System.out.println("- 3: ABS");
         System.out.print("- Filament type number: ");
-        int ftype = numberInput(1, 3);
+        int ftype = consoleInput.getIntInput(1, 3);
         System.out.println("--------------------------------------");
         FilamentType type;
         switch (ftype) {
@@ -191,11 +204,11 @@ public class Main {
             }
         }
         System.out.print("- Color number: ");
-        int colorChoice = numberInput(1, availableColors.size());
+        int colorChoice = consoleInput.getIntInput(1, availableColors.size());
         colors.add(availableColors.get(colorChoice-1));
         for(int i = 1; i < print.getFilamentLength().size(); i++) {
             System.out.print("- Color number: ");
-            colorChoice = numberInput(1, availableColors.size());
+            colorChoice = consoleInput.getIntInput(1, availableColors.size());
             colors.add(availableColors.get(colorChoice-1));
         }
         System.out.println("--------------------------------------");
@@ -345,41 +358,5 @@ public class Main {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-    }
-
-    public int menuChoice(int max) {
-        int choice = -1;
-        while (choice < 0 || choice > max) {
-            System.out.print("- Choose an option: ");
-            try {
-                choice = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                //try again after consuming the current line
-                System.out.println("- Error: Invalid input");
-                scanner.nextLine();
-            }
-        }
-        return choice;
-    }
-
-    public String stringInput() {
-        String input = null;
-        while(input == null || input.length() == 0){
-            input = scanner.nextLine();
-        }
-        return input;
-    }
-
-    public int numberInput() {
-        int input = scanner.nextInt();
-        return input;
-    }
-
-    public int numberInput(int min, int max) {
-        int input = numberInput();
-        while (input < min || input > max) {
-            input = numberInput();
-        }
-        return input;
     }
 }

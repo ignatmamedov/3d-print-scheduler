@@ -1,4 +1,4 @@
-package dataprovider.reader;
+package saxion.dataprovider.reader;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

@@ -1,10 +1,7 @@
-package models;
+package saxion.models;
 
 import nl.saxion.Models.FilamentType;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class Spool {
