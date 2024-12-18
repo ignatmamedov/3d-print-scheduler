@@ -9,15 +9,15 @@ import dataprovider.DataProvider;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
 
-        DataProvider dataProvider = new DataProvider();
-
-        List<Printer> printers = dataProvider.readJson("printers.json", Printer.class);
-        List<Print> prints = dataProvider.readJson("prints.json", Print.class);
-        List<Spool> spools = dataProvider.readJson("spools.json", Spool.class);
-
-        System.out.println("Printers: " + printers);
-        System.out.println("Prints: " + prints);
-        System.out.println("Spools: " + spools);
+//        DataProvider dataProvider = new DataProvider();
+//
+//        List<Printer> printers = dataProvider.readJson("printers.json", Printer.class);
+//        List<Print> prints = dataProvider.readJson("prints.json", Print.class);
+//        List<Spool> spools = dataProvider.readJson("spools.json", Spool.class);
+//
+//        System.out.println("Printers: " + printers);
+//        System.out.println("Prints: " + prints);
+//        System.out.println("Spools: " + spools);
 
 
 
