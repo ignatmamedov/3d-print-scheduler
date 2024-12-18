@@ -2,53 +2,53 @@ package nl.saxion.new_test_classes;
 
 import nl.saxion.Facade;
 import nl.saxion.input.ConsoleInput;
-import nl.saxion.menu.MenuHandler;
+import nl.saxion.input.UserInput;
 
 public class MainRefactored {
-    private final MenuHandler menuHandler = new MenuHandler(new ConsoleInput());
-    private final Facade facade = new Facade(menuHandler);
+    private final UserInput consoleInput = new ConsoleInput();
+    private final Facade facade = new Facade();
 
     public static void main(String[] args) {
-        new nl.saxion.Main().run(args);
+        new MainRefactored().run(args);
     }
 
     public void run(String[] args) {
         int choice = 1;
         while (choice > 0 && choice < 10) {
             // display menu should return string
-            menuHandler.displayMenu();
-            choice = menuHandler.getMenuChoice();
+            facade.displayMenu();
+            choice = consoleInput.getIntInput(0, 9);
             switch (choice) {
-                case 0:
-                    break;
-                case 1:
-                    facade.addNewPrintTask();
-                    break;
-                case 2:
-                    facade.registerPrintCompletion();
-                    break;
-                case 3:
-                    facade.registerPrinterFailure();
-                    break;
-                case 4:
-                    facade.changePrintStrategy();
-                    break;
-                case 5:
-                    facade.startPrintQueue();
-                    break;
-                case 6:
-                    facade.showPrints();
-                    break;
-                case 7:
-                    facade.showPrinters();
-                    break;
-                case 8:
-                    facade.showSpools();
-                    break;
-                case 9:
-                    facade.showPendingPrintTasks();
-                    break;
+                case 0 -> {}
+                case 1 -> addNewPrintTask();
+                case 2 -> facade.registerPrintCompletion();
+                case 3 -> facade.registerPrinterFailure();
+                case 4 -> facade.changePrintStrategy();
+                case 5 -> facade.startPrintQueue();
+                case 6 -> facade.showPrints();
+                case 7 -> facade.showPrinters();
+                case 8 -> facade.showSpools();
+                case 9 -> facade.showPendingPrintTasks();
             }
         }
+    }
+
+    public void addNewPrintTask() {
+        System.out.println(facade.getPrints());
+        int printChoice = consoleInput.getIntInput(1, facade.getPrintSize());
+
+        System.out.println(facade.getFilamentTypesOptions());
+        int filamentType = consoleInput.getIntInput(1, 3);
+
+        System.out.println(facade.getColorsOptions(filamentType));
+
+        facade.prepareSelectedColorsList();
+        for (int i = 0; i < facade.getFilamentColorsNumber(printChoice); i++) {
+            System.out.println(facade.getColorsOptions());
+            int colorChoice = consoleInput.getIntInput(1, facade.getColorsSize());
+            facade.addSelectedColors(colorChoice);
+        }
+
+        facade.addNewPrintTask(printChoice, filamentType);
     }
 }

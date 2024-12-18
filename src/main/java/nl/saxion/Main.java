@@ -2,7 +2,7 @@ package nl.saxion;
 
 import nl.saxion.Models.*;
 import nl.saxion.input.ConsoleInput;
-import nl.saxion.menu.MenuHandler;
+import nl.saxion.menu.MenuPrinter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,7 +18,7 @@ import java.util.*;
 public class Main {
     private final PrinterManager manager = new PrinterManager();
     private final ConsoleInput consoleInput = new ConsoleInput();
-    private final MenuHandler menuHandler = new MenuHandler(consoleInput);
+    private final MenuPrinter menuPrinter = new MenuPrinter();
 
     private String printStrategy = "Less Spool Changes";
 
@@ -39,7 +39,7 @@ public class Main {
         int choice = 1;
         while (choice > 0 && choice < 10) {
             menu();
-            choice = menuHandler.getMenuChoice();
+            choice = consoleInput.getIntInput(1, 9);
             System.out.println("-----------------------------------");
             switch (choice) {
                 case 0:

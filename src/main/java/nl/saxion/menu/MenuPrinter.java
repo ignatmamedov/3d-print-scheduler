@@ -1,11 +1,9 @@
 package nl.saxion.menu;
 
-import nl.saxion.input.UserInput;
-
 import java.util.List;
 
-public class MenuHandler {
-    private final UserInput userInput;
+//TODO: Change String to DTO(records)
+public class MenuPrinter {
 
     private static final List<String> DEFAULT_MENU_OPTIONS = List.of(
             "1) Add new Print Task",
@@ -20,10 +18,7 @@ public class MenuHandler {
             "0) Exit"
     );
 
-    public MenuHandler(UserInput userInput) {
-        this.userInput = userInput;
-    }
-
+//TODO: returns string in this method
     public void displayMenu() {
         System.out.println("------------- Menu ----------------");
         for (String option : DEFAULT_MENU_OPTIONS) {
@@ -52,9 +47,5 @@ public class MenuHandler {
         }
         menu.append("-----------------------------------");
         return menu.toString();
-    }
-
-    public int getMenuChoice() {
-        return userInput.getIntInput(0, 9);
     }
 }
