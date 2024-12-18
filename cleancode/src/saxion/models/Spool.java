@@ -1,7 +1,6 @@
 package saxion.models;
 
-import nl.saxion.Models.FilamentType;
-
+import saxion.types.FilamentType;
 import java.util.Map;
 
 public class Spool {

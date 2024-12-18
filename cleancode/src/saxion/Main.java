@@ -56,7 +56,7 @@ public class Main {
             facade.addSelectedColors(colorChoice);
         }
 
-        facade.addNewPrintTask(printChoice, filamentType);
+        terminal.show(facade.addNewPrintTask(printChoice, filamentType));
     }
 
     public void readData(String[] args) {

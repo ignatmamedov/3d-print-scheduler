@@ -1,8 +1,12 @@
 package saxion.handlers;
 
-import nl.saxion.Models.PrintTask;
-import nl.saxion.Models.Printer;
+import saxion.models.Print;
+import saxion.models.PrintTask;
+import saxion.printers.Printer;
+import saxion.types.FilamentType;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +14,16 @@ public class PrintTaskHandler {
     private List<PrintTask> pendingPrintTasks;
     private Map<Printer, PrintTask> runningPrintTasks;
 
-    public void addNewPrintTask() {
-        // Add a new print task to the pending print tasks
-        //... rest here
+    public PrintTaskHandler() {
+        this.pendingPrintTasks = new ArrayList<>();
+        this.runningPrintTasks = new HashMap<>();
+    }
+
+    public String addNewPrintTask(Print print, List<String> colors, FilamentType filamentType) {
+        PrintTask printTask = new PrintTask(print, colors, filamentType);
+        pendingPrintTasks.add(printTask);
+
+        return "Print task added to the queue";
     }
 
     public void registerPrintCompletion() {

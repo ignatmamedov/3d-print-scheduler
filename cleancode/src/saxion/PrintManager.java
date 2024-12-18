@@ -6,8 +6,8 @@ import saxion.handlers.PrinterHandler;
 import saxion.handlers.SpoolHandler;
 import saxion.models.Print;
 import saxion.models.Spool;
-import nl.saxion.Models.FilamentType;
 import saxion.printers.Printer;
+import saxion.types.FilamentType;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class PrintManager {
     private final DataProvider dataProvider;
     private List<Spool> spools;
     private List<Print> prints;
-    List<Printer> printers;
+    private List<Printer> printers;
 
     public PrintManager() {
         this.printTaskHandler = new PrintTaskHandler();
@@ -33,8 +33,33 @@ public class PrintManager {
         return List.copyOf(prints);
     }
 
-    public void addNewPrintTask(String printName, int filamentType, List<String> colors) {
-        printTaskHandler.addNewPrintTask();
+    public String addNewPrintTask(String printName, int filamentType, List<String> colors) {
+        try {
+            FilamentType type = getFilamentType(filamentType);
+            Print print = getPrintByName(printName);
+            validateColors(colors, type);
+
+            return printTaskHandler.addNewPrintTask(print, colors, type);
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
+    }
+
+    private Print getPrintByName(String printName) {
+        return prints.stream()
+                .filter(p -> p.getName().equals(printName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Print not found"));
+    }
+
+    private void validateColors(List<String> colors, FilamentType type) {
+        for (String color : colors) {
+            boolean found = spools.stream()
+                    .anyMatch(spool -> spool.getColor().equals(color) && spool.getFilamentType() == type);
+            if (!found) {
+                throw new IllegalArgumentException("Color " + color + " (" + type + ") not found");
+            }
+        }
     }
 
     public FilamentType getFilamentType(int filamentType) {
@@ -88,7 +113,7 @@ public class PrintManager {
         printTaskHandler.showPrints();
     }
 
-    public List<Print> getPrints(){
+    public List<Print> getPrints() {
         return prints;
     }
 
@@ -126,7 +151,9 @@ public class PrintManager {
     }
 
 
-    public void addPrinters(){}
+    public void addPrinters() {
+    }
 
-    public void addPrintTasks(){}
+    public void addPrintTasks() {
+    }
 }

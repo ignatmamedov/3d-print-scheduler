@@ -96,8 +96,8 @@ public class Facade {
         selectedColors.add(colors.get(colorChoice - 1));
     }
 
-    public void addNewPrintTask(Integer printChoice, Integer filamentType) {
-        printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, selectedColors);
+    public String addNewPrintTask(Integer printChoice, Integer filamentType) {
+        return printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, selectedColors);
     }
 
     public String displayMenu() {
