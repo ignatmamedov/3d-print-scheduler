@@ -1,9 +1,7 @@
-package nl.saxion.printers;
+package saxion.printers;
 
 import nl.saxion.Models.Print;
 import nl.saxion.Models.Spool;
-import saxion.printers.Printer;
-import saxion.printers.SpoolManager;
 
 import java.util.List;
 
