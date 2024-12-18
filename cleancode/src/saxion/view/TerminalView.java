@@ -1,6 +1,7 @@
 package saxion.view;
 
 import saxion.facade.PrintDTO;
+import saxion.facade.PrintTaskDTO;
 import saxion.facade.SpoolDTO;
 
 public class TerminalView implements View<String>{
@@ -30,6 +31,13 @@ public class TerminalView implements View<String>{
                 "- filamentType: " + spool.filamentType() + System.lineSeparator() +
                 "- length: " + spool.length() + System.lineSeparator() +
                 "--------";
+    }
+    @Override
+    public String formatPrintTaskDTO(PrintTaskDTO printTask){
+        return "< " + printTask.print() +
+                " " + printTask.filamentType() +
+                " " + printTask.colors().toString() +
+                " >";
     }
 
 

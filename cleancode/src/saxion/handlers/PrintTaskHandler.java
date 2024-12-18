@@ -45,4 +45,8 @@ public class PrintTaskHandler {
     public void selectPrintTask() {
         // Select a print task (Strategy pattern)
     }
+    public List<PrintTask> getPendingPrintTasks() {
+        return pendingPrintTasks;
+    }
+
 }

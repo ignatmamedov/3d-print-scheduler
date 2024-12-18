@@ -1,7 +1,9 @@
 package saxion;
 
+import nl.saxion.Models.PrintTask;
 import saxion.facade.Facade;
 import saxion.facade.PrintDTO;
+import saxion.facade.PrintTaskDTO;
 import saxion.facade.SpoolDTO;
 import saxion.input.ConsoleInput;
 import saxion.input.UserInput;
@@ -9,6 +11,7 @@ import saxion.view.TerminalView;
 import saxion.view.View;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class Main {
     private final UserInput consoleInput = new ConsoleInput();
@@ -42,7 +45,7 @@ public class Main {
                 case 6 -> showPrints();
                 case 7 -> facade.showPrinters();
                 case 8 -> showSpools();
-                case 9 -> facade.showPendingPrintTasks();
+                case 9 -> showPendingPrintTasks();
             }
         }
     }
@@ -79,6 +82,15 @@ public class Main {
         for (Iterator<SpoolDTO> it = facade.getSpools(); it.hasNext(); ) {
             SpoolDTO spoolDTO = it.next();
             terminal.show(terminal.formatSpoolDTO(spoolDTO));
+        }
+        terminal.show("----------------------------");
+    }
+
+    private void showPendingPrintTasks() {
+        terminal.show("--------- Pending Print Tasks ---------");
+        for (Iterator<PrintTaskDTO> it = facade.getPendingPrintTasks(); it.hasNext(); ) {
+            PrintTaskDTO printTaskDTO = it.next();
+            terminal.show(terminal.formatPrintTaskDTO(printTaskDTO));
         }
         terminal.show("----------------------------");
     }

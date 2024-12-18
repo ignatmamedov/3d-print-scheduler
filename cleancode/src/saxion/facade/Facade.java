@@ -3,6 +3,7 @@ package saxion.facade;
 import saxion.PrintManager;
 import saxion.menu.MenuPrinter;
 import saxion.models.Print;
+import saxion.models.PrintTask;
 import saxion.models.Spool;
 
 import java.io.FileNotFoundException;
@@ -52,6 +53,11 @@ public class Facade {
     public Iterator<SpoolDTO> getSpools() {
         return printManager.getSpools().stream()
                 .map(Spool::toDTO)
+                .iterator();
+    }
+    public Iterator<PrintTaskDTO> getPendingPrintTasks() {
+        return printManager.getPendingPrintTasks().stream()
+                .map(PrintTask::toDTO)
                 .iterator();
     }
 
