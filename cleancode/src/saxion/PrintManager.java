@@ -117,6 +117,10 @@ public class PrintManager {
         return prints;
     }
 
+    public List<Spool> getSpools(){
+        return spools;
+    }
+
     public void showPrinters() {
         printerHandler.showPrinters();
     }

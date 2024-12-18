@@ -1,5 +1,6 @@
 package saxion.models;
 
+import saxion.facade.SpoolDTO;
 import saxion.types.FilamentType;
 import java.util.Map;
 
@@ -54,17 +55,6 @@ public class Spool {
         return filamentType;
     }
 
-    @Override
-    public String toString() {
-        return  "--------" + System.lineSeparator() +
-                "- id: " + id + System.lineSeparator() +
-                "- color: " + color + System.lineSeparator() +
-                "- filamentType: " + filamentType + System.lineSeparator() +
-                "- length: " + length + System.lineSeparator() +
-                "--------";
-    }
-
-
     public static Spool fromMap(Map<String, Object> map) {
         int id = Integer.parseInt(map.getOrDefault("id", map.getOrDefault("1", "0")).toString());
         String color = map.getOrDefault("color", map.getOrDefault("2", "unknown")).toString();
@@ -72,6 +62,10 @@ public class Spool {
         double length = Double.parseDouble(map.getOrDefault("length", map.getOrDefault("4", "0.0")).toString());
 
         return new Spool(id, color, type, length);
-
     }
+
+    public SpoolDTO toDTO(){
+        return new SpoolDTO(id, color, filamentType, length);
+    }
+
 }

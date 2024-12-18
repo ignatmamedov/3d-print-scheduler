@@ -2,6 +2,7 @@ package saxion;
 
 import saxion.facade.Facade;
 import saxion.facade.PrintDTO;
+import saxion.facade.SpoolDTO;
 import saxion.input.ConsoleInput;
 import saxion.input.UserInput;
 import saxion.view.TerminalView;
@@ -19,7 +20,12 @@ public class Main {
     }
 
     public void run(String[] args) {
-        readData(args);
+        try {
+            facade.readData(args);
+        } catch (Exception e) {
+            terminal.show("Failed to read files");
+            e.printStackTrace();
+        }
 
         int choice = 1;
         while (choice > 0 && choice < 10) {
@@ -35,7 +41,7 @@ public class Main {
                 case 5 -> facade.startPrintQueue();
                 case 6 -> showPrints();
                 case 7 -> facade.showPrinters();
-                case 8 -> facade.showSpools();
+                case 8 -> showSpools();
                 case 9 -> facade.showPendingPrintTasks();
             }
         }
@@ -59,21 +65,6 @@ public class Main {
         terminal.show(facade.addNewPrintTask(printChoice, filamentType));
     }
 
-    public void readData(String[] args) {
-        String printsFile = args.length > 0 ? args[0] : "";
-        String spoolsFile = args.length > 1 ? args[1] : "";
-        String printersFile = args.length > 2 ? args[2] : "";
-
-        try {
-            facade.readPrintsFromFile(printsFile, true);
-            facade.readSpoolsFromFile(spoolsFile, true);
-            facade.readPrintersFromFile(printersFile, true);
-        } catch (Exception e) {
-            System.err.println("Failed to read files");
-            e.printStackTrace();
-        }
-    }
-
     public void showPrints(){
         terminal.show("---------- Available prints ----------");
         for (Iterator<PrintDTO> it = facade.getPrints(); it.hasNext(); ) {
@@ -82,4 +73,14 @@ public class Main {
             terminal.show("--------------------------------------");
         }
     }
+
+    private void showSpools() {
+        terminal.show("---------- Spools ----------");
+        for (Iterator<SpoolDTO> it = facade.getSpools(); it.hasNext(); ) {
+            SpoolDTO spoolDTO = it.next();
+            terminal.show(terminal.formatSpoolDTO(spoolDTO));
+        }
+        terminal.show("----------------------------");
+    }
+
 }

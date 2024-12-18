@@ -1,4 +1,4 @@
-package saxion.utils;
+package saxion.dataprovider;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

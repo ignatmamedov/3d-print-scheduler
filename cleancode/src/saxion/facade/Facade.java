@@ -3,6 +3,7 @@ package saxion.facade;
 import saxion.PrintManager;
 import saxion.menu.MenuPrinter;
 import saxion.models.Print;
+import saxion.models.Spool;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -45,6 +46,12 @@ public class Facade {
     public Iterator<PrintDTO> getPrints() {
         return printManager.getPrints().stream()
                 .map(Print::toDTO)
+                .iterator();
+    }
+
+    public Iterator<SpoolDTO> getSpools() {
+        return printManager.getSpools().stream()
+                .map(Spool::toDTO)
                 .iterator();
     }
 
@@ -104,15 +111,12 @@ public class Facade {
         return menuPrinter.displayMenu();
     }
 
-    public void readPrintsFromFile(String filename, boolean header) throws FileNotFoundException {
-        printManager.readPrints(filename, header);
-    }
-
-    public void readSpoolsFromFile(String filename, boolean header) throws FileNotFoundException {
-        printManager.readSpools(filename, header);
-    }
-
-    public void readPrintersFromFile(String filename, boolean header) throws FileNotFoundException {
-        printManager.readPrinters(filename, header);
+    public void readData(String[] args) throws FileNotFoundException {
+        String printsFile = args.length > 0 ? args[0] : "";
+        String spoolsFile = args.length > 1 ? args[1] : "";
+        String printersFile = args.length > 2 ? args[2] : "";
+        printManager.readPrints(printsFile, true);
+        printManager.readSpools(spoolsFile, true);
+        printManager.readPrinters(printersFile, true);
     }
 }
