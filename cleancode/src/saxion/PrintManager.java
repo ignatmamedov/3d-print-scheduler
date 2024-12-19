@@ -23,6 +23,8 @@ public class PrintManager {
     private List<Print> prints;
     private List<Printer> printers;
 
+    private List<PrintTask> pendingPrintTasks = new ArrayList<>();
+
     public PrintManager() {
         this.printTaskHandler = new PrintTaskHandler();
         this.printerHandler = new PrinterHandler();
@@ -68,16 +70,44 @@ public class PrintManager {
     }
 
     public FilamentType getFilamentType(int filamentType) {
-        switch (filamentType) {
-            case 1:
-                return FilamentType.PLA;
-            case 2:
-                return FilamentType.PETG;
-            case 3:
-                return FilamentType.ABS;
-            default:
-                throw new IllegalArgumentException("Invalid filament type");
+        return switch (filamentType) {
+            case 1 -> FilamentType.PLA;
+            case 2 -> FilamentType.PETG;
+            case 3 -> FilamentType.ABS;
+            default -> throw new IllegalArgumentException("Invalid filament type");
+        };
+    }
+
+    public String finalizeRunningTask(int printerId, boolean isSuccessful) {
+        Printer printer = getPrinterById(printerId);
+        PrintTask task = removeTaskFromPrinter(printer);
+        if (!isSuccessful){
+            pendingPrintTasks.add(task);
         }
+        return "Task " + task + " removed from printer " + printer.getName();
+    }
+
+    public String selectPrintTask(){
+        return "";
+    };
+
+    public PrintTask removeTaskFromPrinter(Printer printer) {
+        PrintTask task = printer.getTask();
+        printer.setTask(null);
+        List<Spool> spools = printer.getCurrentSpools();
+        for(int i = 0; i < spools.size() && i < task.getColors().size(); i++) {
+            spools.get(i).reduceLength(task.getPrint().getFilamentLength().get(i));
+        }
+        return task;
+    }
+
+    public Printer getPrinterById(int printerId){
+        return printers.stream()
+                .filter(printer -> printer.getId() == printerId && printer.getTask() != null)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Cannot find a running task on printer with ID " + printerId
+                ));
     }
 
     public List<String> getAvailableColors(int filamentType) {

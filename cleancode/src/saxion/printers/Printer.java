@@ -1,14 +1,18 @@
 package saxion.printers;
 
+import saxion.models.Spool;
 import saxion.models.Print;
 import saxion.facade.PrinterDTO;
 import saxion.models.PrintTask;
 
+import java.util.List;
+
 public abstract class Printer {
     private final int id;
     private final String name;
-
     private PrintTask task;
+    private final String manufacturer;
+    private final boolean isHoused;
 
     public PrintTask getTask() {
         return task;
@@ -26,8 +30,7 @@ public abstract class Printer {
         return isHoused;
     }
 
-    private final String manufacturer;
-    private final boolean isHoused;
+    public abstract List<Spool> getCurrentSpools();
 
     public Printer(int id, String printerName, String manufacturer, boolean isHoused) {
         this.id = id;
