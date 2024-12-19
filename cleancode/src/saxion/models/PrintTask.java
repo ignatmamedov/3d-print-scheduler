@@ -2,11 +2,12 @@ package saxion.models;
 
 import saxion.facade.PrintTaskDTO;
 import saxion.types.FilamentType;
+import saxion.models.Print;
 
 import java.util.List;
 
 public class PrintTask {
-    private saxion.models.Print print;
+    private Print print;
     private List<String> colors;
     private FilamentType filamentType;
 

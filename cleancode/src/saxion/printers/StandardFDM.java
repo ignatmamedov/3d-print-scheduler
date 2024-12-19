@@ -80,7 +80,8 @@ public class StandardFDM extends Printer implements SpoolManager {
                 maxY,
                 maxZ,
                 null,
-                spools
+                spools,
+                getTask() != null ? getTask().toDTO() : null
         );
     }
 }

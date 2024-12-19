@@ -2,10 +2,21 @@ package saxion.printers;
 
 import saxion.models.Print;
 import saxion.facade.PrinterDTO;
+import saxion.models.PrintTask;
 
 public abstract class Printer {
     private final int id;
     private final String name;
+
+    private PrintTask task;
+
+    public PrintTask getTask() {
+        return task;
+    }
+
+    public void setTask(PrintTask task) {
+        this.task = task;
+    }
 
     public String getManufacturer() {
         return manufacturer;
@@ -50,7 +61,8 @@ public abstract class Printer {
                 name,
                 manufacturer,
                 isHoused,
-                null, null, null, null, null
+                null, null, null, null, null,
+                getTask() != null ? getTask().toDTO() : null
         );
     }
 

@@ -54,11 +54,16 @@ public class TerminalView implements View<String>{
         result.append("- ID: ").append(printer.id()).append(System.lineSeparator());
         result.append("- Name: ").append(printer.name()).append(System.lineSeparator());
         result.append("- Manufacturer: ").append(printer.manufacturer()).append(System.lineSeparator());
+        result.append("- Housed: ").append(printer.isHoused() ? "Yes" : "No").append(System.lineSeparator());
 
         if (printer.maxX() != null) result.append("- maxX: ").append(printer.maxX()).append(System.lineSeparator());
         if (printer.maxY() != null) result.append("- maxY: ").append(printer.maxY()).append(System.lineSeparator());
         if (printer.maxZ() != null) result.append("- maxZ: ").append(printer.maxZ()).append(System.lineSeparator());
         if (printer.maxColors() != null) result.append("- maxColors: ").append(printer.maxColors()).append(System.lineSeparator());
+
+        if (printer.task() != null) {
+            result.append("- Task: ").append(formatPrintTaskDTO(printer.task())).append(System.lineSeparator());
+        }
 
         List<SpoolDTO> spools = Objects.requireNonNullElse(printer.spools(), List.of());
         if (!spools.isEmpty()) {

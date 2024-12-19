@@ -71,7 +71,8 @@ public class MultiColor extends StandardFDM implements SpoolManager {
                 getMaxY(),
                 getMaxZ(),
                 maxColors,
-                spools
+                spools,
+                getTask() != null ? getTask().toDTO() : null
         );
     }
 }

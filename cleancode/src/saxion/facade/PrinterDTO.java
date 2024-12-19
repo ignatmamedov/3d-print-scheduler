@@ -12,6 +12,7 @@ public record PrinterDTO(
         Integer maxY,
         Integer maxZ,
         Integer maxColors,
-        List<SpoolDTO> spools
+        List<SpoolDTO> spools,
+        PrintTaskDTO task
 ) {}
 
