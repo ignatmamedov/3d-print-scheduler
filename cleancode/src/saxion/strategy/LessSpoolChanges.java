@@ -4,6 +4,7 @@ import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.MultiColor;
 import saxion.printers.Printer;
+import saxion.printers.StandardFDM;
 import saxion.types.FilamentType;
 
 import java.util.ArrayList;
@@ -34,12 +35,16 @@ public class LessSpoolChanges implements PrintingStrategy {
 
     private PrintTask findTaskWithCurrentSpools(Printer printer, List<PrintTask> pendingPrintTasks) {
         List<Spool> spools = printer.getCurrentSpools();
+        if (spools == null || spools.isEmpty()) {
+            return null;
+        }
 
         for (PrintTask printTask : pendingPrintTasks) {
             if (isTaskCompatible(printer, spools, printTask)) {
                 return printTask;
             }
         }
+
         return null;
     }
 
@@ -48,8 +53,9 @@ public class LessSpoolChanges implements PrintingStrategy {
             if (printer.printFits(printTask.getPrint()) && printer.getTask() == null) {
                 List<Spool> matchingSpools = findMatchingSpools(freeSpools, printTask);
                 if (!matchingSpools.isEmpty() && matchingSpools.size() == printTask.getColors().size()) {
-                    applySpoolChanges(printer, matchingSpools, freeSpools, result);
-                    return printTask;
+                    if (applySpoolChanges(printer, matchingSpools, freeSpools, result)) {
+                        return printTask;
+                    }
                 }
             }
         }
@@ -85,26 +91,44 @@ public class LessSpoolChanges implements PrintingStrategy {
     private List<Spool> findMatchingSpools(List<Spool> freeSpools, PrintTask printTask) {
         List<Spool> matchingSpools = new ArrayList<>();
         for (String color : printTask.getColors()) {
-            for (Spool spool : freeSpools) {
-                if (spool.spoolMatch(color, printTask.getFilamentType()) && !matchingSpools.contains(spool)) {
-                    matchingSpools.add(spool);
-                    break;
-                }
+            Spool matchedSpool = freeSpools.stream()
+                    .filter(spool -> spool.spoolMatch(color, printTask.getFilamentType()) && !matchingSpools.contains(spool))
+                    .findFirst()
+                    .orElse(null);
+
+            if (matchedSpool != null) {
+                matchingSpools.add(matchedSpool);
             }
         }
         return matchingSpools;
     }
 
-    private void applySpoolChanges(Printer printer, List<Spool> newSpools, List<Spool> freeSpools, StringBuilder result) {
-        freeSpools.addAll(printer.getCurrentSpools());
-
-        printer.setCurrentSpools(newSpools);
-        int position = 1;
-        for (Spool spool : newSpools) {
+    private boolean applySpoolChanges(Printer printer, List<Spool> newSpools, List<Spool> freeSpools, StringBuilder result) {
+        if (printer instanceof StandardFDM) {
+            if (newSpools.size() != 1) {
+                return false;
+            }
+            freeSpools.addAll(printer.getCurrentSpools());
+            printer.setCurrentSpools(newSpools);
+            Spool spool = newSpools.getFirst();
             result.append("- Spool change: Please place spool ").append(spool.getId())
-                    .append(" in printer ").append(printer.getName()).append(" position ").append(position).append("\n");
+                    .append(" in printer ").append(printer.getName()).append("\n");
             freeSpools.remove(spool);
-            position++;
+            return true;
+        } else if (printer instanceof MultiColor || printer.isHoused()) {
+            freeSpools.addAll(printer.getCurrentSpools());
+            printer.setCurrentSpools(newSpools);
+            int position = 1;
+            for (Spool spool : newSpools) {
+                result.append("- Spool change: Please place spool ").append(spool.getId())
+                        .append(" in printer ").append(printer.getName()).append(" position ").append(position).append("\n");
+                freeSpools.remove(spool);
+                position++;
+            }
+            return true;
         }
+        return false;
     }
 }
+
+

@@ -61,7 +61,7 @@ public class StandardFDM extends Printer implements SpoolManager {
 
     @Override
     public List<Spool> getCurrentSpools() {
-        return List.of(currentSpool);
+        return currentSpool != null ? List.of(currentSpool) : List.of();
     }
 
 

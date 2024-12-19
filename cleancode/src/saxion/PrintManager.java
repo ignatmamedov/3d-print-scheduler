@@ -16,6 +16,7 @@ import saxion.types.FilamentType;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class PrintManager {
     private final PrintTaskHandler printTaskHandler;
@@ -132,12 +133,19 @@ public class PrintManager {
         return printTaskHandler.getRunningPrintTasksSize();
     }
 
-    public void startPrintQueue() {
+    public String startPrintQueue() {
+        StringBuilder result = new StringBuilder();
         for (Printer printer : printers) {
             if (printer.getTask() == null) {
-                selectPrintTask(printer);
+                String output = selectPrintTask(printer);
+                if(output != null || !output.isBlank()) {
+                    result.append(output);
+                    result.append(System.lineSeparator());
+                }
             }
         }
+
+        return result.toString();
     }
 
     public List<Print> getPrints() {

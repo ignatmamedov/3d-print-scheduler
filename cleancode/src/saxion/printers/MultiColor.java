@@ -50,7 +50,7 @@ public class MultiColor extends StandardFDM implements SpoolManager {
 
     @Override
     public List<Spool> getCurrentSpools() {
-        return currentSpools;
+        return currentSpools != null ? new ArrayList<>(currentSpools) : new ArrayList<>();
     }
 
     @Override

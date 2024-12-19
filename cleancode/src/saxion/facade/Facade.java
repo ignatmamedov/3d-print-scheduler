@@ -41,8 +41,8 @@ public class Facade {
         return printManager.getAvailableStrategies().size();
     }
 
-    public void startPrintQueue() {
-        printManager.startPrintQueue();
+    public String startPrintQueue() {
+        return printManager.startPrintQueue();
     }
 
     public Iterator<PrintDTO> getPrints() {
