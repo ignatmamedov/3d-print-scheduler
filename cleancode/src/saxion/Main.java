@@ -7,6 +7,7 @@ import saxion.view.TerminalView;
 import saxion.view.View;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 public class Main {
     private final UserInput consoleInput = new ConsoleInput();

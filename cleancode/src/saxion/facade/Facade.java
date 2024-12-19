@@ -29,10 +29,6 @@ public class Facade {
         this.menuPrinter = new MenuPrinter();
     }
 
-    public void registerPrinterFailure() {
-        //printManager.registerPrinterFailure();
-    }
-
     public void changePrintStrategy(int strategyChoice) {
         printManager.setPrintingStrategy(strategyChoice);
     }
@@ -46,7 +42,7 @@ public class Facade {
     }
 
     public void startPrintQueue() {
-        //printManager.startPrintQueue();
+        printManager.startPrintQueue();
     }
 
     public Iterator<PrintDTO> getPrints() {
@@ -88,21 +84,8 @@ public class Facade {
     public String registerPrinterStatus(int printerId, boolean isSuccessful){
         String result = "-----------------------------------\n";
         result += printManager.finalizeRunningTask(printerId, isSuccessful);
-        result += printManager.selectPrintTask();
+        result += printManager.selectPrintTask(printerId);
         return result;
-    }
-
-
-    public void showPrinters() {
-        //printManager.showPrinters();
-    }
-
-    public void showSpools() {
-        //printManager.showSpools();
-    }
-
-    public void showPendingPrintTasks() {
-        //printManager.showPendingPrintTasks();
     }
 
     public String getAvailablePrints() {

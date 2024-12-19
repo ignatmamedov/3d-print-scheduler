@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EfficientSpoolChange implements PrintingStrategy{
     @Override
-    public void selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
-
+    public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
+        return "Hello from EfficientSpoolChange";
     }
 }

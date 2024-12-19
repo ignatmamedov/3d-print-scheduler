@@ -49,8 +49,8 @@ public class PrintTaskHandler {
     }
 
     // execute strategy
-    public void selectPrintTask(Printer printer, List<Spool> freeSpools) {
-        printingStrategy.selectPrintTask(printer, pendingPrintTasks, printers, freeSpools);
+    public String selectPrintTask(Printer printer, List<Spool> freeSpools) {
+        return printingStrategy.selectPrintTask(printer, pendingPrintTasks, printers, freeSpools);
     }
 
     public int getRunningPrintTasksSize() {

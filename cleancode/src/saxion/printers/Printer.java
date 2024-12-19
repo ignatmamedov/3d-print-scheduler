@@ -32,6 +32,8 @@ public abstract class Printer {
 
     public abstract List<Spool> getCurrentSpools();
 
+    public abstract void setCurrentSpools(List<Spool> spools);
+
     public Printer(int id, String printerName, String manufacturer, boolean isHoused) {
         this.id = id;
         this.name = printerName;

@@ -52,7 +52,7 @@ public class PrintManager {
         }
     }
 
-    public List<PrintTask> getPendingPrintTasks(){
+    public List<PrintTask> getPendingPrintTasks() {
         return printTaskHandler.getPendingPrintTasks();
     }
 
@@ -85,27 +85,23 @@ public class PrintManager {
     public String finalizeRunningTask(int printerId, boolean isSuccessful) {
         Printer printer = getPrinterById(printerId);
         PrintTask task = removeTaskFromPrinter(printer);
-        if (!isSuccessful){
+        if (!isSuccessful) {
             pendingPrintTasks.add(task);
         }
         return "Task " + task + " removed from printer " + printer.getName();
     }
 
-    public String selectPrintTask(){
-        return "";
-    };
-
     public PrintTask removeTaskFromPrinter(Printer printer) {
         PrintTask task = printer.getTask();
         printer.setTask(null);
         List<Spool> spools = printer.getCurrentSpools();
-        for(int i = 0; i < spools.size() && i < task.getColors().size(); i++) {
+        for (int i = 0; i < spools.size() && i < task.getColors().size(); i++) {
             spools.get(i).reduceLength(task.getPrint().getFilamentLength().get(i));
         }
         return task;
     }
 
-    public Printer getPrinterById(int printerId){
+    public Printer getPrinterById(int printerId) {
         return printers.stream()
                 .filter(printer -> printer.getId() == printerId && printer.getTask() != null)
                 .findFirst()
@@ -132,31 +128,27 @@ public class PrintManager {
         }
     }
 
-    public void registerPrintCompletion() {
-        printTaskHandler.registerPrintCompletion();
-    }
-
     public int getRunningPrintTasksSize() {
         return printTaskHandler.getRunningPrintTasksSize();
     }
 
-    public void registerPrinterFailure() {
-        printerHandler.registerPrinterFailure();
-    }
-
     public void startPrintQueue() {
-        printTaskHandler.startPrintQueue();
+        for (Printer printer : printers) {
+            if (printer.getTask() == null) {
+                selectPrintTask(printer);
+            }
+        }
     }
 
     public List<Print> getPrints() {
         return prints;
     }
 
-    public List<Spool> getSpools(){
+    public List<Spool> getSpools() {
         return spools;
     }
 
-    public List<Printer> getPrinters(){
+    public List<Printer> getPrinters() {
         return printers;
     }
 
@@ -199,10 +191,20 @@ public class PrintManager {
     }
 
     public List<String> getAvailableStrategies() {
-        return List.of("Strategy 1", "Strategy 2");
+        return List.of("Less spool changes", "Efficient Spool usage");
     }
 
-    private void selectPrintTask(Printer printer){
-        printTaskHandler.selectPrintTask(printer, freeSpools);
+    public String selectPrintTask(int printerId) {
+        try {
+            Printer printer = getPrinterById(printerId);
+            return selectPrintTask(printer);
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
     }
+
+    private String selectPrintTask(Printer printer) {
+        return printTaskHandler.selectPrintTask(printer, freeSpools);
+    }
+
 }

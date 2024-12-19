@@ -7,5 +7,5 @@ import saxion.printers.Printer;
 import java.util.List;
 
 public interface PrintingStrategy {
-    void selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools);
+    String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools);
 }
