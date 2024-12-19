@@ -32,18 +32,24 @@ public class Main {
             terminal.show(facade.displayMenu());
             choice = consoleInput.getIntInput(0, 9);
             switch (choice) {
-                case 0 -> {break;}
+                case 0 -> {
+                    break;
+                }
                 case 1 -> addNewPrintTask();
                 case 2 -> registerPrintCompletion();
                 case 3 -> registerPrinterFailure();
                 case 4 -> changePrintStrategy();
-                case 5 -> terminal.show(facade.startPrintQueue());
+                case 5 -> startPrintQueue();
                 case 6 -> showPrints();
                 case 7 -> showPrinters();
                 case 8 -> showSpools();
                 case 9 -> showPendingPrintTasks();
             }
         }
+    }
+
+    public void startPrintQueue() {
+        terminal.show(facade.startPrintQueue());
     }
 
     public void changePrintStrategy() {
@@ -115,7 +121,7 @@ public class Main {
             counter += 1;
         }
 
-        if (counter > 0){
+        if (counter > 0) {
             if (isSuccess) {
                 terminal.show("- Printer that is done (ID): ");
             } else {

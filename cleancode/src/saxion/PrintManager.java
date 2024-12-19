@@ -138,7 +138,7 @@ public class PrintManager {
         for (Printer printer : printers) {
             if (printer.getTask() == null) {
                 String output = selectPrintTask(printer);
-                if(output != null || !output.isBlank()) {
+                if (output != null || !output.isBlank()) {
                     result.append(output);
                     result.append(System.lineSeparator());
                 }

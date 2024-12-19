@@ -56,6 +56,7 @@ public class Facade {
                 .map(Spool::toDTO)
                 .iterator();
     }
+
     public Iterator<PrintTaskDTO> getPendingPrintTasks() {
         return printManager.getPendingPrintTasks().stream()
                 .map(PrintTask::toDTO)
@@ -68,7 +69,7 @@ public class Facade {
                 .iterator();
     }
 
-    public int getRunningPrintersNum(){
+    public int getRunningPrintersNum() {
         return (int) printManager.getPrinters().stream()
                 .filter(printer -> printer.getTask() != null)
                 .count();
@@ -81,7 +82,7 @@ public class Facade {
                 .iterator();
     }
 
-    public String registerPrinterStatus(int printerId, boolean isSuccessful){
+    public String registerPrinterStatus(int printerId, boolean isSuccessful) {
         String result = "-----------------------------------\n";
         result += printManager.finalizeRunningTask(printerId, isSuccessful);
         result += printManager.selectPrintTask(printerId);
