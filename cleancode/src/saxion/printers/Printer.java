@@ -1,10 +1,20 @@
 package saxion.printers;
 
-import nl.saxion.Models.Print;
+import saxion.models.Print;
+import saxion.facade.PrinterDTO;
 
 public abstract class Printer {
     private final int id;
     private final String name;
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public boolean isHoused() {
+        return isHoused;
+    }
+
     private final String manufacturer;
     private final boolean isHoused;
 
@@ -34,13 +44,14 @@ public abstract class Printer {
 
     public abstract boolean printFits(Print print);
 
-    @Override
-    public String toString() {
-        return  "--------" + System.lineSeparator() +
-                "- ID: " + id + System.lineSeparator() +
-                "- Name: " + name + System.lineSeparator() +
-                "- Manufacturer: " + manufacturer + System.lineSeparator() +
-                "--------";
+    public PrinterDTO toDTO() {
+        return new PrinterDTO(
+                id,
+                name,
+                manufacturer,
+                isHoused,
+                null, null, null, null, null
+        );
     }
 
 }

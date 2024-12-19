@@ -1,10 +1,8 @@
 package saxion;
 
 import nl.saxion.Models.PrintTask;
-import saxion.facade.Facade;
-import saxion.facade.PrintDTO;
-import saxion.facade.PrintTaskDTO;
-import saxion.facade.SpoolDTO;
+import nl.saxion.Models.Printer;
+import saxion.facade.*;
 import saxion.input.ConsoleInput;
 import saxion.input.UserInput;
 import saxion.view.TerminalView;
@@ -43,7 +41,7 @@ public class Main {
                 case 4 -> facade.changePrintStrategy();
                 case 5 -> facade.startPrintQueue();
                 case 6 -> showPrints();
-                case 7 -> facade.showPrinters();
+                case 7 -> showPrinters();
                 case 8 -> showSpools();
                 case 9 -> showPendingPrintTasks();
             }
@@ -94,5 +92,14 @@ public class Main {
         }
         terminal.show("----------------------------");
     }
+
+    private void showPrinters() {
+        terminal.show("--------- Available printers ---------");
+        for (Iterator<PrinterDTO> it = facade.getPrinters(); it.hasNext(); ) {
+            PrinterDTO printerDTO = it.next();
+            terminal.show(terminal.formatPrinterDTO(printerDTO));
+        }
+        terminal.show("----------------------------");
+}
 
 }

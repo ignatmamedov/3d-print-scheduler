@@ -1,10 +1,14 @@
 package saxion.printers;
 
-import nl.saxion.Models.Print;
-import nl.saxion.Models.Spool;
+import saxion.facade.PrinterDTO;
+import saxion.facade.SpoolDTO;
+import saxion.models.Print;
+import saxion.models.Spool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MultiColor extends StandardFDM implements SpoolManager {
     private final int maxColors;
@@ -47,5 +51,27 @@ public class MultiColor extends StandardFDM implements SpoolManager {
     @Override
     public List<Spool> getCurrentSpools() {
         return currentSpools;
+    }
+
+    @Override
+    public PrinterDTO toDTO() {
+        List<SpoolDTO> spools = currentSpools != null
+                ? currentSpools.stream()
+                .filter(Objects::nonNull)
+                .map(Spool::toDTO)
+                .collect(Collectors.toList())
+                : null;
+
+        return new PrinterDTO(
+                getId(),
+                getName(),
+                getManufacturer(),
+                isHoused(),
+                getMaxX(),
+                getMaxY(),
+                getMaxZ(),
+                maxColors,
+                spools
+        );
     }
 }

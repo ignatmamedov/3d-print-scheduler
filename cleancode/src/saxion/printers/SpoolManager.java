@@ -1,6 +1,6 @@
 package saxion.printers;
 
-import nl.saxion.Models.Spool;
+import saxion.models.Spool;
 
 import java.util.List;
 
