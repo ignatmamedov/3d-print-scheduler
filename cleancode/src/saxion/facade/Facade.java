@@ -33,8 +33,16 @@ public class Facade {
         //printManager.registerPrinterFailure();
     }
 
-    public void changePrintStrategy() {
-        //printManager.changePrintStrategy();
+    public void changePrintStrategy(int strategyChoice) {
+        printManager.setPrintingStrategy(strategyChoice);
+    }
+
+    public String getAvailableStrategies() {
+        return menuPrinter.displayOptions(printManager.getAvailableStrategies(), "Strategies", true);
+    }
+
+    public Integer getStrategiesSize() {
+        return printManager.getAvailableStrategies().size();
     }
 
     public void startPrintQueue() {

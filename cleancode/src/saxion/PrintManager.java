@@ -8,6 +8,9 @@ import saxion.models.Print;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
+import saxion.printers.StandardFDM;
+import saxion.strategy.EfficientSpoolChange;
+import saxion.strategy.LessSpoolChanges;
 import saxion.types.FilamentType;
 
 import java.io.FileNotFoundException;
@@ -20,6 +23,7 @@ public class PrintManager {
     private final SpoolHandler spoolHandler;
     private final DataProvider dataProvider;
     private List<Spool> spools;
+    private List<Spool> freeSpools;
     private List<Print> prints;
     private List<Printer> printers;
 
@@ -132,18 +136,6 @@ public class PrintManager {
         printTaskHandler.registerPrintCompletion();
     }
 
-    public String getRunningPrintTasks(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("---------- Currently Running Printers ----------\n");
-        for (Printer p : printers) {
-            PrintTask printerCurrentTask = printTaskHandler.getPrintTaskByPrinter(p);
-            if (printerCurrentTask != null) {
-                sb.append("- ").append(p.getId()).append(": ").append(p.getName()).append(" - ").append(printerCurrentTask).append("\n");
-            }
-        }
-
-        return sb.toString();
-    }
 
     public int getRunningPrintTasksSize() {
         return printTaskHandler.getRunningPrintTasksSize();
@@ -160,6 +152,7 @@ public class PrintManager {
     public void startPrintQueue() {
         printTaskHandler.startPrintQueue();
     }
+
 
     public List<Print> getPrints() {
         return prints;
@@ -182,6 +175,7 @@ public class PrintManager {
             filename = dataProvider.DEFAULT_SPOOLS_FILE;
         }
         spools = dataProvider.readFromFile(filename, Spool.class, header);
+        freeSpools = new ArrayList<>(spools);
     }
 
     public void readPrints(String filename, boolean header) throws FileNotFoundException {
@@ -196,12 +190,23 @@ public class PrintManager {
             filename = dataProvider.DEFAULT_PRINTERS_FILE;
         }
         printers = dataProvider.readFromFile(filename, Printer.class, header);
+        printTaskHandler.setPrinters(printers);
     }
 
-
-    public void addPrinters() {
+    public void setPrintingStrategy(int strategyChoice) {
+        //TODO: change null to concrete strategy implementations
+        switch (strategyChoice) {
+            case 1 -> {
+                // setPrintingStrategy(new LessSpoolChanges())
+                printTaskHandler.setPrintingStrategy(new LessSpoolChanges());
+            }
+            case 2 -> {
+                printTaskHandler.setPrintingStrategy(new EfficientSpoolChange());
+            }
+        }
     }
 
-    public void addPrintTasks() {
+    public List<String> getAvailableStrategies() {
+        return List.of("Strategy 1", "Strategy 2");
     }
 }

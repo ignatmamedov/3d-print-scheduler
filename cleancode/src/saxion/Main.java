@@ -35,7 +35,7 @@ public class Main {
                 case 1 -> addNewPrintTask();
                 case 2 -> registerPrintCompletion();
                 case 3 -> registerPrinterFailure();
-                case 4 -> facade.changePrintStrategy();
+                case 4 -> changePrintStrategy();
                 case 5 -> facade.startPrintQueue();
                 case 6 -> showPrints();
                 case 7 -> showPrinters();
@@ -43,6 +43,12 @@ public class Main {
                 case 9 -> showPendingPrintTasks();
             }
         }
+    }
+
+    public void changePrintStrategy() {
+        terminal.show(facade.getAvailableStrategies());
+        int strategyChoice = consoleInput.getIntInput("Strategy number: ", 1, facade.getStrategiesSize());
+        facade.changePrintStrategy(strategyChoice);
     }
 
     public void addNewPrintTask() {
