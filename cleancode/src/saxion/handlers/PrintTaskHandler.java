@@ -2,16 +2,14 @@ package saxion.handlers;
 
 import saxion.models.Print;
 import saxion.models.PrintTask;
-import saxion.printers.MultiColor;
+import saxion.models.Spool;
 import saxion.printers.Printer;
 import saxion.strategy.LessSpoolChanges;
 import saxion.strategy.PrintingStrategy;
 import saxion.types.FilamentType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PrintTaskHandler {
     private List<PrintTask> pendingPrintTasks;
@@ -21,7 +19,6 @@ public class PrintTaskHandler {
     public PrintTaskHandler() {
         this.pendingPrintTasks = new ArrayList<>();
         this.printingStrategy = new LessSpoolChanges();
-        // set default strategy
     }
 
     public void setPrinters(List<Printer> printers) {
@@ -51,9 +48,9 @@ public class PrintTaskHandler {
         // Show the pending print tasks
     }
 
-    public void selectPrintTask() {
-        // Select a print task (Strategy pattern)
-        //printingStrategy.selectPrintTask();
+    // execute strategy
+    public void selectPrintTask(Printer printer, List<Spool> freeSpools) {
+        printingStrategy.selectPrintTask(printer, pendingPrintTasks, printers, freeSpools);
     }
 
     public int getRunningPrintTasksSize() {

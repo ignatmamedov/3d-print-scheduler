@@ -136,7 +136,6 @@ public class PrintManager {
         printTaskHandler.registerPrintCompletion();
     }
 
-
     public int getRunningPrintTasksSize() {
         return printTaskHandler.getRunningPrintTasksSize();
     }
@@ -145,14 +144,9 @@ public class PrintManager {
         printerHandler.registerPrinterFailure();
     }
 
-    public void changePrintStrategy() {
-        // Change the print strategy (strategy pattern)
-    }
-
     public void startPrintQueue() {
         printTaskHandler.startPrintQueue();
     }
-
 
     public List<Print> getPrints() {
         return prints;
@@ -194,10 +188,8 @@ public class PrintManager {
     }
 
     public void setPrintingStrategy(int strategyChoice) {
-        //TODO: change null to concrete strategy implementations
         switch (strategyChoice) {
             case 1 -> {
-                // setPrintingStrategy(new LessSpoolChanges())
                 printTaskHandler.setPrintingStrategy(new LessSpoolChanges());
             }
             case 2 -> {
@@ -208,5 +200,9 @@ public class PrintManager {
 
     public List<String> getAvailableStrategies() {
         return List.of("Strategy 1", "Strategy 2");
+    }
+
+    private void selectPrintTask(Printer printer){
+        printTaskHandler.selectPrintTask(printer, freeSpools);
     }
 }

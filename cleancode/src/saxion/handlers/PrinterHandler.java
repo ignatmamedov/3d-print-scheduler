@@ -11,8 +11,4 @@ public class PrinterHandler {
     public void registerPrinterFailure() {
         // Register a printer failure
     }
-
-    public void showPrinters() {
-        // Show the printers
-    }
 }
