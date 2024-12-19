@@ -3,6 +3,9 @@ package saxion.facade;
 import saxion.PrintManager;
 import saxion.menu.MenuPrinter;
 import saxion.models.Print;
+import saxion.models.PrintTask;
+import saxion.models.Spool;
+import saxion.printers.Printer;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -26,20 +29,20 @@ public class Facade {
         this.menuPrinter = new MenuPrinter();
     }
 
-    public void registerPrintCompletion() {
-        //printManager.registerPrintCompletion();
+    public void changePrintStrategy(int strategyChoice) {
+        printManager.setPrintingStrategy(strategyChoice);
     }
 
-    public void registerPrinterFailure() {
-        //printManager.registerPrinterFailure();
+    public String getAvailableStrategies() {
+        return menuPrinter.displayOptions(printManager.getAvailableStrategies(), "Strategies", true);
     }
 
-    public void changePrintStrategy() {
-        //printManager.changePrintStrategy();
+    public Integer getStrategiesSize() {
+        return printManager.getAvailableStrategies().size();
     }
 
-    public void startPrintQueue() {
-        //printManager.startPrintQueue();
+    public String startPrintQueue() {
+        return printManager.startPrintQueue();
     }
 
     public Iterator<PrintDTO> getPrints() {
@@ -48,16 +51,42 @@ public class Facade {
                 .iterator();
     }
 
-    public void showPrinters() {
-        //printManager.showPrinters();
+    public Iterator<SpoolDTO> getSpools() {
+        return printManager.getSpools().stream()
+                .map(Spool::toDTO)
+                .iterator();
     }
 
-    public void showSpools() {
-        //printManager.showSpools();
+    public Iterator<PrintTaskDTO> getPendingPrintTasks() {
+        return printManager.getPendingPrintTasks().stream()
+                .map(PrintTask::toDTO)
+                .iterator();
     }
 
-    public void showPendingPrintTasks() {
-        //printManager.showPendingPrintTasks();
+    public Iterator<PrinterDTO> getPrinters() {
+        return printManager.getPrinters().stream()
+                .map(Printer::toDTO)
+                .iterator();
+    }
+
+    public int getRunningPrintersNum() {
+        return (int) printManager.getPrinters().stream()
+                .filter(printer -> printer.getTask() != null)
+                .count();
+    }
+
+    public Iterator<PrinterDTO> getRunningPrinters() {
+        return printManager.getPrinters().stream()
+                .filter(printer -> printer.getTask() != null)
+                .map(Printer::toDTO)
+                .iterator();
+    }
+
+    public String registerPrinterStatus(int printerId, boolean isSuccessful) {
+        String result = "-----------------------------------\n";
+        result += printManager.finalizeRunningTask(printerId, isSuccessful);
+        result += printManager.selectPrintTask(printerId);
+        return result;
     }
 
     public String getAvailablePrints() {
@@ -96,23 +125,20 @@ public class Facade {
         selectedColors.add(colors.get(colorChoice - 1));
     }
 
-    public void addNewPrintTask(Integer printChoice, Integer filamentType) {
-        printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, selectedColors);
+    public String addNewPrintTask(Integer printChoice, Integer filamentType) {
+        return printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, selectedColors);
     }
 
     public String displayMenu() {
         return menuPrinter.displayMenu();
     }
 
-    public void readPrintsFromFile(String filename, boolean header) throws FileNotFoundException {
-        printManager.readPrints(filename, header);
-    }
-
-    public void readSpoolsFromFile(String filename, boolean header) throws FileNotFoundException {
-        printManager.readSpools(filename, header);
-    }
-
-    public void readPrintersFromFile(String filename, boolean header) throws FileNotFoundException {
-        printManager.readPrinters(filename, header);
+    public void readData(String[] args) throws FileNotFoundException {
+        String printsFile = args.length > 0 ? args[0] : "";
+        String spoolsFile = args.length > 1 ? args[1] : "";
+        String printersFile = args.length > 2 ? args[2] : "";
+        printManager.readPrints(printsFile, true);
+        printManager.readSpools(spoolsFile, true);
+        printManager.readPrinters(printersFile, true);
     }
 }

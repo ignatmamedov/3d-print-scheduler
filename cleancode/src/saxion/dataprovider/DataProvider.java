@@ -4,7 +4,6 @@ import saxion.dataprovider.reader.JsonAdapter;
 import saxion.dataprovider.reader.CsvAdapter;
 import saxion.dataprovider.reader.Mapper;
 import saxion.dataprovider.reader.SourceAdapter;
-import saxion.utils.FileProvider;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;

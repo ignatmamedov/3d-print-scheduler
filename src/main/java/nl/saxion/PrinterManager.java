@@ -293,8 +293,6 @@ public class PrinterManager {
             spools[i].reduceLength(task.getPrint().getFilamentLength().get(i));
         }
         selectPrintTask(printer);
-
-
     }
 
     private void printError(String s) {

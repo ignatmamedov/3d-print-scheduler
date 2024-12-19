@@ -1,7 +1,7 @@
 package nl.saxion.printers;
 
-import nl.saxion.Models.Print;
-import nl.saxion.Models.Spool;
+import saxion.models.Print;
+import saxion.models.Spool;
 import saxion.printers.Printer;
 import saxion.printers.SpoolManager;
 

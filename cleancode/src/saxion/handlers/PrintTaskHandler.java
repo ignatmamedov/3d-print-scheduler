@@ -1,18 +1,39 @@
 package saxion.handlers;
 
-import nl.saxion.Models.PrintTask;
-import nl.saxion.Models.Printer;
+import saxion.models.Print;
+import saxion.models.PrintTask;
+import saxion.models.Spool;
+import saxion.printers.Printer;
+import saxion.strategy.LessSpoolChanges;
+import saxion.strategy.PrintingStrategy;
+import saxion.types.FilamentType;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class PrintTaskHandler {
     private List<PrintTask> pendingPrintTasks;
-    private Map<Printer, PrintTask> runningPrintTasks;
+    private List<Printer> printers;
+    private PrintingStrategy printingStrategy;
 
-    public void addNewPrintTask() {
-        // Add a new print task to the pending print tasks
-        //... rest here
+    public PrintTaskHandler() {
+        this.pendingPrintTasks = new ArrayList<>();
+        this.printingStrategy = new LessSpoolChanges();
+    }
+
+    public void setPrinters(List<Printer> printers) {
+        this.printers = printers;
+    }
+
+    public void setPrintingStrategy(PrintingStrategy printingStrategy) {
+        this.printingStrategy = printingStrategy;
+    }
+
+    public String addNewPrintTask(Print print, List<String> colors, FilamentType filamentType) {
+        PrintTask printTask = new PrintTask(print, colors, filamentType);
+        pendingPrintTasks.add(printTask);
+
+        return "Print task added to the queue";
     }
 
     public void registerPrintCompletion() {
@@ -23,15 +44,21 @@ public class PrintTaskHandler {
         // Start the print queue
     }
 
-    public void showPrints() {
-        // Show the prints
-    }
-
     public void showPendingPrintTasks() {
         // Show the pending print tasks
     }
 
-    public void selectPrintTask() {
-        // Select a print task (Strategy pattern)
+    // execute strategy
+    public String selectPrintTask(Printer printer, List<Spool> freeSpools) {
+        return printingStrategy.selectPrintTask(printer, pendingPrintTasks, printers, freeSpools);
     }
+
+    public int getRunningPrintTasksSize() {
+        return printers.stream().filter(printer -> printer.getTask() != null).toArray().length;
+    }
+
+    public List<PrintTask> getPendingPrintTasks() {
+        return pendingPrintTasks;
+    }
+
 }
