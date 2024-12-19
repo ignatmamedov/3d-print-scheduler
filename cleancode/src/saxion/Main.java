@@ -1,7 +1,5 @@
 package saxion;
 
-import nl.saxion.Models.PrintTask;
-import nl.saxion.Models.Printer;
 import saxion.facade.*;
 import saxion.input.ConsoleInput;
 import saxion.input.UserInput;
@@ -9,7 +7,7 @@ import saxion.view.TerminalView;
 import saxion.view.View;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.function.Function;
 
 public class Main {
     private final UserInput consoleInput = new ConsoleInput();
@@ -36,8 +34,8 @@ public class Main {
             switch (choice) {
                 case 0 -> {break;}
                 case 1 -> addNewPrintTask();
-                case 2 -> facade.registerPrintCompletion();
-                case 3 -> facade.registerPrinterFailure();
+                case 2 -> registerPrintCompletion();
+                case 3 -> registerPrinterFailure();
                 case 4 -> facade.changePrintStrategy();
                 case 5 -> facade.startPrintQueue();
                 case 6 -> showPrints();
@@ -66,40 +64,60 @@ public class Main {
         terminal.show(facade.addNewPrintTask(printChoice, filamentType));
     }
 
-    public void showPrints(){
-        terminal.show("---------- Available prints ----------");
-        for (Iterator<PrintDTO> it = facade.getPrints(); it.hasNext(); ) {
-            PrintDTO printDTO = it.next();
-            terminal.show(terminal.formatPrintDTO(printDTO));
-            terminal.show("--------------------------------------");
-        }
-    }
-
     private void showSpools() {
-        terminal.show("---------- Spools ----------");
-        for (Iterator<SpoolDTO> it = facade.getSpools(); it.hasNext(); ) {
-            SpoolDTO spoolDTO = it.next();
-            terminal.show(terminal.formatSpoolDTO(spoolDTO));
-        }
-        terminal.show("----------------------------");
+        showSection("---------- Spools ----------", facade.getSpools(), terminal::formatSpoolDTO, null);
     }
 
     private void showPendingPrintTasks() {
-        terminal.show("--------- Pending Print Tasks ---------");
-        for (Iterator<PrintTaskDTO> it = facade.getPendingPrintTasks(); it.hasNext(); ) {
-            PrintTaskDTO printTaskDTO = it.next();
-            terminal.show(terminal.formatPrintTaskDTO(printTaskDTO));
+        showSection("--------- Pending Print Tasks ---------", facade.getPendingPrintTasks(), terminal::formatPrintTaskDTO, null);
+    }
+
+    private void showPrinters() {
+        showSection("--------- Available Printers ---------", facade.getPrinters(), terminal::formatPrinterDTO, null);
+    }
+
+    private void showPrints() {
+        showSection("---------- Available Prints ----------", facade.getPrints(), terminal::formatPrintDTO, "--------------------------------------");
+    }
+
+    private void registerPrintCompletion() {
+        registerPrinterStatus(true);
+    }
+
+    private void registerPrinterFailure() {
+        registerPrinterStatus(false);
+    }
+
+    private <T> void showSection(String header, Iterator<T> iterator, Function<T, String> formatter, String itemSeparator) {
+        terminal.show(header);
+        while (iterator.hasNext()) {
+            T item = iterator.next();
+            terminal.show(formatter.apply(item));
+            if (itemSeparator != null) {
+                terminal.show(itemSeparator);
+            }
         }
         terminal.show("----------------------------");
     }
 
-    private void showPrinters() {
-        terminal.show("--------- Available printers ---------");
-        for (Iterator<PrinterDTO> it = facade.getPrinters(); it.hasNext(); ) {
+    private void registerPrinterStatus(boolean isSuccess) {
+        terminal.show("---------- Currently Running Printers ----------");
+        int counter = 0;
+        for (Iterator<PrinterDTO> it = facade.getRunningPrinters(); it.hasNext(); ) {
             PrinterDTO printerDTO = it.next();
             terminal.show(terminal.formatPrinterDTO(printerDTO));
+            counter += 1;
         }
-        terminal.show("----------------------------");
-}
 
+        if (counter > 0){
+            if (isSuccess) {
+                terminal.show("- Printer that is done (ID): ");
+            } else {
+                terminal.show("- Printer ID that failed: ");
+            }
+
+            int printerId = consoleInput.getIntInput(-1, facade.getRunningPrintersNum());
+            terminal.show(facade.registerPrinterStatus(printerId, isSuccess));
+        }
+    }
 }

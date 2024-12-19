@@ -29,10 +29,6 @@ public class Facade {
         this.menuPrinter = new MenuPrinter();
     }
 
-    public void registerPrintCompletion() {
-        //printManager.registerPrintCompletion();
-    }
-
     public void registerPrinterFailure() {
         //printManager.registerPrinterFailure();
     }
@@ -67,6 +63,27 @@ public class Facade {
                 .map(Printer::toDTO)
                 .iterator();
     }
+
+    public int getRunningPrintersNum(){
+        return (int) printManager.getPrinters().stream()
+                .filter(printer -> printer.getTask() != null)
+                .count();
+    }
+
+    public Iterator<PrinterDTO> getRunningPrinters() {
+        return printManager.getPrinters().stream()
+                .filter(printer -> printer.getTask() != null)
+                .map(Printer::toDTO)
+                .iterator();
+    }
+
+    public String registerPrinterStatus(int printerId, boolean isSuccessful){
+        String result = "-----------------------------------\n";
+        result += printManager.finalizeRunningTask(printerId, isSuccessful);
+        result += printManager.selectPrintTask();
+        return result;
+    }
+
 
     public void showPrinters() {
         //printManager.showPrinters();
