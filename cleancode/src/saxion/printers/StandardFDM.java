@@ -1,7 +1,9 @@
 package saxion.printers;
 
-import nl.saxion.Models.Print;
-import nl.saxion.Models.Spool;
+import saxion.models.Print;
+import saxion.models.Spool;
+import saxion.facade.PrinterDTO;
+import saxion.facade.SpoolDTO;
 
 import java.util.List;
 
@@ -9,6 +11,19 @@ public class StandardFDM extends Printer implements SpoolManager {
     private final int maxX;
     private final int maxY;
     private final int maxZ;
+
+    public int getMaxX() {
+        return maxX;
+    }
+
+    public int getMaxY() {
+        return maxY;
+    }
+
+    public int getMaxZ() {
+        return maxZ;
+    }
+
     private Spool currentSpool;
 
     public StandardFDM(int id, String printerName, String manufacturer, boolean isHoused, int maxX, int maxY, int maxZ) {
@@ -47,5 +62,26 @@ public class StandardFDM extends Printer implements SpoolManager {
     @Override
     public List<Spool> getCurrentSpools() {
         return List.of(currentSpool);
+    }
+
+
+    @Override
+    public PrinterDTO toDTO() {
+        List<SpoolDTO> spools = currentSpool != null
+                ? List.of(currentSpool.toDTO())
+                : null;
+
+        return new PrinterDTO(
+                getId(),
+                getName(),
+                getManufacturer(),
+                isHoused(),
+                maxX,
+                maxY,
+                maxZ,
+                null,
+                spools,
+                getTask() != null ? getTask().toDTO() : null
+        );
     }
 }

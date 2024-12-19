@@ -1,9 +1,11 @@
 package saxion.handlers;
 
+import saxion.printers.Printer;
+
 import java.util.List;
 
 public class PrinterHandler {
-    private List<String> printers;
+    private List<Printer> printers;
     private List<String> freePrinters;
 
     public void registerPrinterFailure() {
