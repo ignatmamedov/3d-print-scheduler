@@ -8,7 +8,6 @@ import saxion.models.Spool;
 import saxion.printers.Printer;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,14 +15,6 @@ import java.util.List;
 public class Facade {
     private final PrintManager printManager;
     private final MenuPrinter menuPrinter;
-
-    /// / todo: store data in printmanager
-    private int printSize;
-    List<String> colors;
-    List<String> selectedColors;
-
-    List<String> prints;
-
     public Facade() {
         this.printManager = new PrintManager();
         this.menuPrinter = new MenuPrinter();
@@ -90,13 +81,12 @@ public class Facade {
     }
 
     public String getAvailablePrints() {
-        prints = printManager.getAvailablePrints().stream().map(printTask -> printTask.getName()).toList();
-        printSize = prints.size();
+        List<String> prints = printManager.getPrints().stream().map(Print::getName).toList();
         return menuPrinter.displayOptions(prints, "Prints", true);
     }
 
     public Integer getPrintSize() {
-        return printSize;
+        return printManager.getPrintsSize();
     }
 
     public String getFilamentTypesOptions() {
@@ -104,29 +94,30 @@ public class Facade {
     }
 
     public String getColorsOptions(Integer filamentType) {
-        colors = printManager.getAvailableColors(filamentType);
+        List<String> colors = printManager.getAvailableColors(filamentType);
         List<String> colorsWithFilament = colors.stream().map(color -> color + " (" + printManager.getFilamentType(filamentType) + ")").toList();
         return menuPrinter.displayOptions(colorsWithFilament, "Colors", true);
     }
 
     public Integer getFilamentColorsNumber(Integer printChoice) {
-        return printManager.getAvailablePrints().get(printChoice - 1).getFilamentLength().size();
+        return printManager.getPrints().get(printChoice - 1).getFilamentLength().size();
     }
 
-    public Integer getColorsSize() {
-        return colors.size();
+    public Integer getColorsSize(Integer filamentType) {
+        return printManager.getAvailableColors(filamentType).size();
     }
 
-    public void prepareSelectedColorsList() {
-        selectedColors = new ArrayList<>();
+    public void createSelectedColorsList() {
+        printManager.createSelectedColorsList();
     }
 
-    public void addSelectedColors(Integer colorChoice) {
-        selectedColors.add(colors.get(colorChoice - 1));
+    public void addSelectedColors(Integer filamentType, Integer colorChoice) {
+        printManager.addSelectedColors(filamentType, colorChoice);
     }
 
     public String addNewPrintTask(Integer printChoice, Integer filamentType) {
-        return printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType, selectedColors);
+        List<String> prints = printManager.getPrints().stream().map(Print::getName).toList();
+        return printManager.addNewPrintTask(prints.get(printChoice - 1), filamentType);
     }
 
     public String displayMenu() {

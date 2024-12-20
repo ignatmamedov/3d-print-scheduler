@@ -8,7 +8,6 @@ import saxion.models.Print;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
-import saxion.printers.StandardFDM;
 import saxion.strategy.EfficientSpoolChange;
 import saxion.strategy.LessSpoolChanges;
 import saxion.types.FilamentType;
@@ -16,7 +15,6 @@ import saxion.types.FilamentType;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class PrintManager {
     private final PrintTaskHandler printTaskHandler;
@@ -29,6 +27,7 @@ public class PrintManager {
     private List<Printer> printers;
 
     private List<PrintTask> pendingPrintTasks = new ArrayList<>();
+    private List<String> selectedColors;
 
     public PrintManager() {
         this.printTaskHandler = new PrintTaskHandler();
@@ -37,17 +36,21 @@ public class PrintManager {
         this.dataProvider = new DataProvider();
     }
 
-    public List<Print> getAvailablePrints() {
+    public List<Print> getPrints() {
         return List.copyOf(prints);
     }
 
-    public String addNewPrintTask(String printName, int filamentType, List<String> colors) {
+    public int getPrintsSize(){
+        return prints.size();
+    }
+
+    public String addNewPrintTask(String printName, int filamentType) {
         try {
             FilamentType type = getFilamentType(filamentType);
             Print print = getPrintByName(printName);
-            validateColors(colors, type);
+            validateColors(selectedColors, type);
 
-            return printTaskHandler.addNewPrintTask(print, colors, type);
+            return printTaskHandler.addNewPrintTask(print, selectedColors, type);
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
@@ -148,10 +151,6 @@ public class PrintManager {
         return result.toString();
     }
 
-    public List<Print> getPrints() {
-        return prints;
-    }
-
     public List<Spool> getSpools() {
         return spools;
     }
@@ -209,6 +208,15 @@ public class PrintManager {
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
+    }
+
+    public void createSelectedColorsList() {
+        selectedColors = new ArrayList<>();
+    }
+
+    public void addSelectedColors(Integer filamentType, Integer colorChoice) {
+        List<String> colors = getAvailableColors(filamentType);
+        selectedColors.add(colors.get(colorChoice - 1));
     }
 
     private String selectPrintTask(Printer printer) {
