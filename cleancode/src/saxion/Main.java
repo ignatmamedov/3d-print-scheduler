@@ -67,10 +67,10 @@ public class Main {
 
         terminal.show(facade.getColorsOptions(filamentType));
 
-        facade.prepareSelectedColorsList();
+        facade.createSelectedColorsList();
         for (int i = 0; i < facade.getFilamentColorsNumber(printChoice); i++) {
-            int colorChoice = consoleInput.getIntInput("Color number: ", 1, facade.getColorsSize());
-            facade.addSelectedColors(colorChoice);
+            int colorChoice = consoleInput.getIntInput("Color number: ", 1, facade.getColorsSize(filamentType));
+            facade.addSelectedColors(filamentType, colorChoice);
         }
 
         terminal.show(facade.addNewPrintTask(printChoice, filamentType));
