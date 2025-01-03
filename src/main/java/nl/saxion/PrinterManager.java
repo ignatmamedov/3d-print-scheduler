@@ -35,7 +35,6 @@ public class PrinterManager {
         return list.stream().anyMatch(o -> o.getColor().equals(name));
     }
 
-    //TODO use Strategy pattern to select the right printer (?)
     public void selectPrintTask(Printer printer) {
         Spool[] spools = printer.getCurrentSpools();
         PrintTask chosenTask = null;

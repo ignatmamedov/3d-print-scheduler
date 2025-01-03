@@ -87,12 +87,20 @@ public class PrintManager {
     }
 
     public String finalizeRunningTask(int printerId, boolean isSuccessful) {
-        Printer printer = getPrinterById(printerId);
+        Printer printer = getRunningPrinterById(printerId);
         PrintTask task = removeTaskFromPrinter(printer);
         if (!isSuccessful) {
             pendingPrintTasks.add(task);
         }
+        reduceSpoolLength(printer, task);
         return "Task " + task + " removed from printer " + printer.getName();
+    }
+
+    private void reduceSpoolLength(Printer printer, PrintTask task) {
+        List<Spool> spools = printer.getCurrentSpools();
+        for (int i = 0; i < spools.size() && i < task.getColors().size(); i++) {
+            spools.get(i).reduceLength(task.getPrint().getFilamentLength().get(i));
+        }
     }
 
     public PrintTask removeTaskFromPrinter(Printer printer) {
@@ -105,12 +113,21 @@ public class PrintManager {
         return task;
     }
 
-    public Printer getPrinterById(int printerId) {
+    public Printer getRunningPrinterById(int printerId) {
         return printers.stream()
                 .filter(printer -> printer.getId() == printerId && printer.getTask() != null)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         "Cannot find a running task on printer with ID " + printerId
+                ));
+    }
+
+    public Printer getPrinterById(int printerId) {
+        return printers.stream()
+                .filter(printer -> printer.getId() == printerId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Cannot find a printer with ID " + printerId
                 ));
     }
 
@@ -210,6 +227,10 @@ public class PrintManager {
         }
     }
 
+    private String selectPrintTask(Printer printer) {
+        return printTaskHandler.selectPrintTask(printer, freeSpools);
+    }
+
     public void createSelectedColorsList() {
         selectedColors = new ArrayList<>();
     }
@@ -219,8 +240,5 @@ public class PrintManager {
         selectedColors.add(colors.get(colorChoice - 1));
     }
 
-    private String selectPrintTask(Printer printer) {
-        return printTaskHandler.selectPrintTask(printer, freeSpools);
-    }
 
 }

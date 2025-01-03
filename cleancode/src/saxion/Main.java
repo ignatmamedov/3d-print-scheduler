@@ -32,9 +32,7 @@ public class Main {
             terminal.show(facade.displayMenu());
             choice = consoleInput.getIntInput(0, 9);
             switch (choice) {
-                case 0 -> {
-                    break;
-                }
+                case 0 -> {break;}
                 case 1 -> addNewPrintTask();
                 case 2 -> registerPrintCompletion();
                 case 3 -> registerPrinterFailure();
