@@ -7,6 +7,9 @@ import saxion.handlers.SpoolHandler;
 import saxion.models.Print;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
+import saxion.observer.Observable;
+import saxion.observer.Observer;
+import saxion.observer.PrintEvent;
 import saxion.printers.Printer;
 import saxion.strategy.EfficientSpoolChange;
 import saxion.strategy.LessSpoolChanges;
@@ -16,7 +19,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrintManager {
+public class PrintManager implements Observable, Observer {
     private final PrintTaskHandler printTaskHandler;
     private final PrinterHandler printerHandler;
     private final SpoolHandler spoolHandler;
@@ -29,11 +32,28 @@ public class PrintManager {
     private List<PrintTask> pendingPrintTasks = new ArrayList<>();
     private List<String> selectedColors;
 
+    private final List<Observer> observers = new ArrayList<>();
+    private final LessSpoolChanges lessSpoolChanges = new LessSpoolChanges();
+    private final EfficientSpoolChange efficientSpoolChange = new EfficientSpoolChange();
+    private int spoolChangeCount = 0;
+    private int printsFulfilled = 0;
+
     public PrintManager() {
-        this.printTaskHandler = new PrintTaskHandler();
+        this.printTaskHandler = new PrintTaskHandler(lessSpoolChanges);
         this.printerHandler = new PrinterHandler();
         this.spoolHandler = new SpoolHandler();
         this.dataProvider = new DataProvider();
+
+        lessSpoolChanges.addObserver(this);
+        efficientSpoolChange.addObserver(this);
+    }
+
+    public int getSpoolChangeCount() {
+        return spoolChangeCount;
+    }
+
+    public int getPrintsFulfilled() {
+        return printsFulfilled;
     }
 
     public List<Print> getPrints() {
@@ -91,6 +111,9 @@ public class PrintManager {
         PrintTask task = removeTaskFromPrinter(printer);
         if (!isSuccessful) {
             pendingPrintTasks.add(task);
+        } else {
+            printsFulfilled++;
+            notifyObservers();
         }
         reduceSpoolLength(printer, task);
         return "Task " + task + " removed from printer " + printer.getName();
@@ -158,7 +181,7 @@ public class PrintManager {
         for (Printer printer : printers) {
             if (printer.getTask() == null) {
                 String output = selectPrintTask(printer);
-                if (output != null || !output.isBlank()) {
+                if (!output.isEmpty()) {
                     result.append(output);
                     result.append(System.lineSeparator());
                 }
@@ -206,10 +229,10 @@ public class PrintManager {
     public void setPrintingStrategy(int strategyChoice) {
         switch (strategyChoice) {
             case 1 -> {
-                printTaskHandler.setPrintingStrategy(new LessSpoolChanges());
+                printTaskHandler.setPrintingStrategy(lessSpoolChanges);
             }
             case 2 -> {
-                printTaskHandler.setPrintingStrategy(new EfficientSpoolChange());
+                printTaskHandler.setPrintingStrategy(efficientSpoolChange);
             }
         }
     }
@@ -241,4 +264,27 @@ public class PrintManager {
     }
 
 
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        PrintEvent event = new PrintEvent(spoolChangeCount, printsFulfilled);
+        for (Observer observer : observers) {
+            observer.update(event);
+        }
+    }
+
+    @Override
+    public void update(PrintEvent event) {
+        spoolChangeCount += event.getSpoolChangeCount();
+        printsFulfilled += event.getPrintsFulfilled();
+    }
 }

@@ -15,6 +15,7 @@ public class MenuPrinter {
             "7) Show printers",
             "8) Show spools",
             "9) Show pending print tasks",
+            "10) Show Dashboard Stats",
             "0) Exit"
     );
 

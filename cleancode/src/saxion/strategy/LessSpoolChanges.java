@@ -2,6 +2,9 @@ package saxion.strategy;
 
 import saxion.models.PrintTask;
 import saxion.models.Spool;
+import saxion.observer.Observable;
+import saxion.observer.Observer;
+import saxion.observer.PrintEvent;
 import saxion.printers.MultiColor;
 import saxion.printers.Printer;
 import saxion.types.FilamentType;
@@ -9,7 +12,34 @@ import saxion.types.FilamentType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LessSpoolChanges implements PrintingStrategy {
+public class LessSpoolChanges implements PrintingStrategy, Observable {
+    private int spoolChangeCount = 0;
+    private final List<Observer> observers;
+
+    public LessSpoolChanges() {
+        observers = new ArrayList<>();
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+        System.out.println(observers);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        spoolChangeCount++;
+        PrintEvent event = new PrintEvent(spoolChangeCount, 0);
+        for (Observer observer : observers) {
+            observer.update(event);
+        }
+    }
+
     @Override
     public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
         List<Spool> spools = printer.getCurrentSpools();
@@ -145,6 +175,8 @@ public class LessSpoolChanges implements PrintingStrategy {
         printer.setCurrentSpools(List.of(newSpool));
 
         System.out.println("- Spool change: Please place spool " + newSpool.getId() + " in printer " + printer.getName());
+
+        notifyObservers();
     }
 
     private void replaceSpools(Printer printer, List<Spool> newSpools, List<Spool> freeSpools) {
@@ -156,6 +188,8 @@ public class LessSpoolChanges implements PrintingStrategy {
             System.out.println("- Spool change: Please place spool " + spool.getId() + " in printer " + printer.getName() + " position " + position);
             position++;
         }
+
+        notifyObservers();
     }
 
     private boolean containsSpool(final List<Spool> list, final String name) {

@@ -27,10 +27,10 @@ public class Main {
         }
 
         int choice = 1;
-        while (choice > 0 && choice < 10) {
+        while (choice > 0 && choice < 11) {
             // display menu should return string
             terminal.show(facade.displayMenu());
-            choice = consoleInput.getIntInput(0, 9);
+            choice = consoleInput.getIntInput(0, 10);
             switch (choice) {
                 case 0 -> {break;}
                 case 1 -> addNewPrintTask();
@@ -42,8 +42,13 @@ public class Main {
                 case 7 -> showPrinters();
                 case 8 -> showSpools();
                 case 9 -> showPendingPrintTasks();
+                case 10 -> showDashboardStats();
             }
         }
+    }
+
+    public void showDashboardStats() {
+        terminal.show(facade.getDashboardStats());
     }
 
     public void startPrintQueue() {
@@ -126,7 +131,7 @@ public class Main {
                 terminal.show("- Printer ID that failed: ");
             }
 
-            int printerId = consoleInput.getIntInput(-1, facade.getRunningPrintersNum());
+            int printerId = consoleInput.getIntInput(facade.getRunningPrintersIds());
             terminal.show(facade.registerPrinterStatus(printerId, isSuccess));
         }
     }

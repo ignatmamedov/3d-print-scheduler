@@ -1,5 +1,6 @@
 package saxion.facade;
 
+import saxion.Dashboard;
 import saxion.PrintManager;
 import saxion.menu.MenuPrinter;
 import saxion.models.Print;
@@ -14,10 +15,18 @@ import java.util.List;
 
 public class Facade {
     private final PrintManager printManager;
+    private final Dashboard dashboard;
     private final MenuPrinter menuPrinter;
+
     public Facade() {
         this.printManager = new PrintManager();
         this.menuPrinter = new MenuPrinter();
+        this.dashboard = new Dashboard(printManager);
+    }
+
+    public String getDashboardStats() {
+        printManager.notifyObservers();
+        return dashboard.getStats();
     }
 
     public void changePrintStrategy(int strategyChoice) {
@@ -131,5 +140,12 @@ public class Facade {
         printManager.readPrints(printsFile, true);
         printManager.readSpools(spoolsFile, true);
         printManager.readPrinters(printersFile, true);
+    }
+
+    public List<Integer> getRunningPrintersIds() {
+        return printManager.getPrinters().stream()
+                .filter(printer -> printer.getTask() != null)
+                .map(Printer::getId)
+                .toList();
     }
 }

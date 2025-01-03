@@ -16,9 +16,9 @@ public class PrintTaskHandler {
     private List<Printer> printers;
     private PrintingStrategy printingStrategy;
 
-    public PrintTaskHandler() {
+    public PrintTaskHandler(PrintingStrategy printingStrategy) {
         this.pendingPrintTasks = new ArrayList<>();
-        this.printingStrategy = new LessSpoolChanges();
+        this.printingStrategy = printingStrategy;
     }
 
     public void setPrinters(List<Printer> printers) {

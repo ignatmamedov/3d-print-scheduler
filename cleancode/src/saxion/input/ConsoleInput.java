@@ -1,5 +1,6 @@
 package saxion.input;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleInput implements UserInput{
@@ -26,6 +27,24 @@ public class ConsoleInput implements UserInput{
                 }
                 if (max != null && input > max) {
                     System.out.println("Input must be less than or equal to " + max);
+                    continue;
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, please enter a number");
+            }
+        }
+        return input;
+    }
+
+    @Override
+    public int getIntInput(List<Integer> availableOptions) {
+        int input;
+        while (true) {
+            try {
+                input = Integer.parseInt(scanner.nextLine());
+                if (!availableOptions.contains(input)) {
+                    System.out.println("Invalid input, please enter a valid option: " + availableOptions);
                     continue;
                 }
                 break;

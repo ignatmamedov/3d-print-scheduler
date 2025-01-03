@@ -8,7 +8,7 @@ public interface UserInput {
 
     int getIntInput(String message, Integer min, Integer max);
 
-    //int getIntInput(List<Integer> availableOptions);
+    int getIntInput(List<Integer> availableOptions);
 
     default int getIntInput() {
         return getIntInput(null,null, null);
