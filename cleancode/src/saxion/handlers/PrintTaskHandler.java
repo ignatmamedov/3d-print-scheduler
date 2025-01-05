@@ -36,19 +36,6 @@ public class PrintTaskHandler {
         return "Print task added to the queue";
     }
 
-    public void registerPrintCompletion() {
-        // Register a print completion
-    }
-
-    public void startPrintQueue() {
-        // Start the print queue
-    }
-
-    public void showPendingPrintTasks() {
-        // Show the pending print tasks
-    }
-
-    // execute strategy
     public String selectPrintTask(Printer printer, List<Spool> freeSpools) {
         return printingStrategy.selectPrintTask(printer, pendingPrintTasks, printers, freeSpools);
     }

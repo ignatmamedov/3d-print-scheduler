@@ -23,7 +23,6 @@ public class Main {
             facade.readData(args);
         } catch (Exception e) {
             terminal.show("Failed to read files");
-            e.printStackTrace();
         }
 
         int choice = 1;

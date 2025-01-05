@@ -7,6 +7,7 @@ import saxion.models.Print;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
+import saxion.types.FilamentType;
 
 import java.io.FileNotFoundException;
 import java.util.Iterator;
@@ -22,14 +23,6 @@ public class Facade {
         this.printManager = new PrintManager();
         this.menuPrinter = new MenuPrinter();
         this.dashboard = new Dashboard(printManager);
-    }
-    public void readData(String[] args) throws FileNotFoundException {
-        String printsFile = args.length > 0 ? args[0] : "";
-        String spoolsFile = args.length > 1 ? args[1] : "";
-        String printersFile = args.length > 2 ? args[2] : "";
-        printManager.readPrints(printsFile, true);
-        printManager.readSpools(spoolsFile, true);
-        printManager.readPrinters(printersFile, true);
     }
 
     public String getDashboardStats() {
@@ -55,8 +48,8 @@ public class Facade {
     }
 
     public String getColorsOptions(Integer filamentType) {
-        List<String> colors = printManager.getAvailableColors(filamentType);
-        List<String> colorsWithFilament = colors.stream().map(color -> color + " (" + printManager.getFilamentType(filamentType) + ")").toList();
+        List<String> colors = printManager.getSpoolHandler().getAvailableColors(filamentType);
+        List<String> colorsWithFilament = colors.stream().map(color -> color + " (" + FilamentType.getFilamentType(filamentType) + ")").toList();
         return menuPrinter.displayOptions(colorsWithFilament, "Colors", true);
     }
 
@@ -72,6 +65,9 @@ public class Facade {
         return menuPrinter.displayOptions(List.of("PLA", "PETG", "ABS"), "Filament Types ", true);
     }
 
+    public void readData(String[] args) throws FileNotFoundException {
+        printManager.readData(args);
+    }
     public Integer getPrintSize() {
         return printManager.getPrintsSize();
     }
@@ -93,7 +89,7 @@ public class Facade {
     }
 
     public Integer getColorsSize(Integer filamentType) {
-        return printManager.getAvailableColors(filamentType).size();
+        return printManager.getSpoolHandler().getAvailableColors(filamentType).size();
     }
 
     public void createSelectedColorsList() {
@@ -111,7 +107,7 @@ public class Facade {
     }
 
     public Iterator<SpoolDTO> getSpools() {
-        return printManager.getSpools().stream()
+        return printManager.getSpoolHandler().getSpools().stream()
                 .map(Spool::toDTO)
                 .iterator();
     }
@@ -123,20 +119,20 @@ public class Facade {
     }
 
     public Iterator<PrinterDTO> getPrinters() {
-        return printManager.getPrinters().stream()
+        return printManager.getPrinterHandler().getPrinters().stream()
                 .map(Printer::toDTO)
                 .iterator();
     }
 
     public Iterator<PrinterDTO> getRunningPrinters() {
-        return printManager.getPrinters().stream()
+        return printManager.getPrinterHandler().getPrinters().stream()
                 .filter(printer -> printer.getTask() != null)
                 .map(Printer::toDTO)
                 .iterator();
     }
 
     public List<Integer> getRunningPrintersIds() {
-        return printManager.getPrinters().stream()
+        return printManager.getPrinterHandler().getPrinters().stream()
                 .filter(printer -> printer.getTask() != null)
                 .map(Printer::getId)
                 .toList();

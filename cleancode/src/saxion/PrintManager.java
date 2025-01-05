@@ -24,10 +24,7 @@ public class PrintManager implements Observable, Observer {
     private final PrinterHandler printerHandler;
     private final SpoolHandler spoolHandler;
     private final DataProvider dataProvider;
-    private List<Spool> spools;
-    private List<Spool> freeSpools;
     private List<Print> prints;
-    private List<Printer> printers;
 
     private List<PrintTask> pendingPrintTasks = new ArrayList<>();
     private List<String> selectedColors;
@@ -48,14 +45,6 @@ public class PrintManager implements Observable, Observer {
         efficientSpoolChange.addObserver(this);
     }
 
-    public int getSpoolChangeCount() {
-        return spoolChangeCount;
-    }
-
-    public int getPrintsFulfilled() {
-        return printsFulfilled;
-    }
-
     public List<Print> getPrints() {
         return List.copyOf(prints);
     }
@@ -64,11 +53,18 @@ public class PrintManager implements Observable, Observer {
         return prints.size();
     }
 
+    public SpoolHandler getSpoolHandler() {
+        return spoolHandler;
+    }
+    public PrinterHandler getPrinterHandler() {
+        return printerHandler;
+    }
+
     public String addNewPrintTask(String printName, int filamentType) {
         try {
-            FilamentType type = getFilamentType(filamentType);
+            FilamentType type = FilamentType.getFilamentType(filamentType);
             Print print = getPrintByName(printName);
-            validateColors(selectedColors, type);
+            spoolHandler.validateColors(selectedColors, type);
 
             return printTaskHandler.addNewPrintTask(print, selectedColors, type);
         } catch (IllegalArgumentException e) {
@@ -87,27 +83,10 @@ public class PrintManager implements Observable, Observer {
                 .orElseThrow(() -> new IllegalArgumentException("Print not found"));
     }
 
-    private void validateColors(List<String> colors, FilamentType type) {
-        for (String color : colors) {
-            boolean found = spools.stream()
-                    .anyMatch(spool -> spool.getColor().equals(color) && spool.getFilamentType() == type);
-            if (!found) {
-                throw new IllegalArgumentException("Color " + color + " (" + type + ") not found");
-            }
-        }
-    }
 
-    public FilamentType getFilamentType(int filamentType) {
-        return switch (filamentType) {
-            case 1 -> FilamentType.PLA;
-            case 2 -> FilamentType.PETG;
-            case 3 -> FilamentType.ABS;
-            default -> throw new IllegalArgumentException("Invalid filament type");
-        };
-    }
 
     public String finalizeRunningTask(int printerId, boolean isSuccessful) {
-        Printer printer = getRunningPrinterById(printerId);
+        Printer printer = printerHandler.getRunningPrinterById(printerId);
         PrintTask task = removeTaskFromPrinter(printer);
         if (!isSuccessful) {
             pendingPrintTasks.add(task);
@@ -115,15 +94,8 @@ public class PrintManager implements Observable, Observer {
             printsFulfilled++;
             notifyObservers();
         }
-        reduceSpoolLength(printer, task);
+        spoolHandler.reduceSpoolLength(printer, task);
         return "Task " + task + " removed from printer " + printer.getName();
-    }
-
-    private void reduceSpoolLength(Printer printer, PrintTask task) {
-        List<Spool> spools = printer.getCurrentSpools();
-        for (int i = 0; i < spools.size() && i < task.getColors().size(); i++) {
-            spools.get(i).reduceLength(task.getPrint().getFilamentLength().get(i));
-        }
     }
 
     public PrintTask removeTaskFromPrinter(Printer printer) {
@@ -136,48 +108,9 @@ public class PrintManager implements Observable, Observer {
         return task;
     }
 
-    public Printer getRunningPrinterById(int printerId) {
-        return printers.stream()
-                .filter(printer -> printer.getId() == printerId && printer.getTask() != null)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Cannot find a running task on printer with ID " + printerId
-                ));
-    }
-
-    public Printer getPrinterById(int printerId) {
-        return printers.stream()
-                .filter(printer -> printer.getId() == printerId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Cannot find a printer with ID " + printerId
-                ));
-    }
-
-    public List<String> getAvailableColors(int filamentType) {
-        try {
-            FilamentType type = getFilamentType(filamentType);
-
-            List<String> availableColors = new ArrayList<>();
-            for (Spool spool : spools) {
-                if (spool.getFilamentType() == type && !availableColors.contains(spool.getColor())) {
-                    availableColors.add(spool.getColor());
-                }
-            }
-
-            return availableColors;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    public int getRunningPrintTasksSize() {
-        return printTaskHandler.getRunningPrintTasksSize();
-    }
-
     public String startPrintQueue() {
         StringBuilder result = new StringBuilder();
-        for (Printer printer : printers) {
+        for (Printer printer : printerHandler.getPrinters()) {
             if (printer.getTask() == null) {
                 String output = selectPrintTask(printer);
                 if (output != null && !output.isEmpty()) {
@@ -190,39 +123,11 @@ public class PrintManager implements Observable, Observer {
         return result.toString();
     }
 
-    public List<Spool> getSpools() {
-        return spools;
-    }
-
-    public List<Printer> getPrinters() {
-        return printers;
-    }
-
-    public void showPendingPrintTasks() {
-        printTaskHandler.showPendingPrintTasks();
-    }
-
-    public void readSpools(String filename, boolean header) throws FileNotFoundException {
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_SPOOLS_FILE;
-        }
-        spools = dataProvider.readFromFile(filename, Spool.class, header);
-        freeSpools = new ArrayList<>(spools);
-    }
-
     public void readPrints(String filename, boolean header) throws FileNotFoundException {
         if (filename.isEmpty()) {
             filename = dataProvider.DEFAULT_PRINTS_FILE;
         }
         prints = dataProvider.readFromFile(filename, Print.class, header);
-    }
-
-    public void readPrinters(String filename, boolean header) throws FileNotFoundException {
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_PRINTERS_FILE;
-        }
-        printers = dataProvider.readFromFile(filename, Printer.class, header);
-        printTaskHandler.setPrinters(printers);
     }
 
     public void setPrintingStrategy(int strategyChoice) {
@@ -238,7 +143,7 @@ public class PrintManager implements Observable, Observer {
 
     public String selectPrintTask(int printerId) {
         try {
-            Printer printer = getPrinterById(printerId);
+            Printer printer = printerHandler.getPrinterById(printerId);
             return selectPrintTask(printer);
         } catch (IllegalArgumentException e) {
             return e.getMessage();
@@ -246,7 +151,7 @@ public class PrintManager implements Observable, Observer {
     }
 
     private String selectPrintTask(Printer printer) {
-        return printTaskHandler.selectPrintTask(printer, freeSpools);
+        return printTaskHandler.selectPrintTask(printer, spoolHandler.getFreeSpools());
     }
 
     public void createSelectedColorsList() {
@@ -254,10 +159,18 @@ public class PrintManager implements Observable, Observer {
     }
 
     public void addSelectedColors(Integer filamentType, Integer colorChoice) {
-        List<String> colors = getAvailableColors(filamentType);
+        List<String> colors = spoolHandler.getAvailableColors(filamentType);
         selectedColors.add(colors.get(colorChoice - 1));
     }
 
+    public void readData(String[] args) throws FileNotFoundException {
+        String printsFile = args.length > 0 ? args[0] : "";
+        String spoolsFile = args.length > 1 ? args[1] : "";
+        String printersFile = args.length > 2 ? args[2] : "";
+        readPrints(printsFile, true);
+        spoolHandler.readSpools(spoolsFile, true);
+        printerHandler.readPrinters(printersFile, true);
+    }
 
     @Override
     public void addObserver(Observer observer) {
