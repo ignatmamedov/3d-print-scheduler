@@ -6,6 +6,7 @@ import saxion.printers.Printer;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class EfficientSpoolChange extends BasePrintingStrategy implements PrintingStrategy {
@@ -13,17 +14,19 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
     public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
         List<String> messages = new ArrayList<>();
 
-        for (PrintTask printTask : pendingPrintTasks) {
+        for (
+                Iterator<PrintTask> iterator = pendingPrintTasks.iterator(); iterator.hasNext(); ) {
+            PrintTask printTask = iterator.next();
             if (!printer.printFits(printTask.getPrint()) && printer.getTask() != null) {
                 continue;
             }
 
             Spool selectedSpool = selectSmallestPossibleSpool(freeSpools, printTask);
             if (selectedSpool != null) {
-                handleSpoolChange(printer, printTask, List.of(selectedSpool), messages);
+                handleSpoolChange(printer, printTask, new ArrayList<>(List.of(selectedSpool)), messages);
 
                 printer.setTask(printTask);
-                pendingPrintTasks.remove(printTask);
+                iterator.remove();
 
                 notifyObservers();
                 return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName();
