@@ -167,7 +167,6 @@ public class PrintManager implements Observable, Observer {
 
             return availableColors;
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
             return null;
         }
     }
