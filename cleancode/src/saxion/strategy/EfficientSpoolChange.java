@@ -14,7 +14,7 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
         List<String> messages = new ArrayList<>();
 
         for (PrintTask printTask : pendingPrintTasks) {
-            if (!printer.printFits(printTask.getPrint())) {
+            if (!printer.printFits(printTask.getPrint()) && printer.getTask() != null) {
                 continue;
             }
 
