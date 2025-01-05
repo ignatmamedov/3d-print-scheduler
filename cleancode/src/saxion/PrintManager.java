@@ -181,7 +181,7 @@ public class PrintManager implements Observable, Observer {
         for (Printer printer : printers) {
             if (printer.getTask() == null) {
                 String output = selectPrintTask(printer);
-                if (!output.isEmpty()) {
+                if (output != null && !output.isEmpty()) {
                     result.append(output);
                     result.append(System.lineSeparator());
                 }

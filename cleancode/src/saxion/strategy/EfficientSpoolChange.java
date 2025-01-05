@@ -2,38 +2,48 @@ package saxion.strategy;
 
 import saxion.models.PrintTask;
 import saxion.models.Spool;
-import saxion.observer.Observable;
-import saxion.observer.Observer;
-import saxion.observer.PrintEvent;
 import saxion.printers.Printer;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class EfficientSpoolChange implements PrintingStrategy, Observable {
-    private final List<Observer> observers = new ArrayList<>();
-    private int spoolChangeCount = 0;
-
-    @Override
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        observers.remove(observer);
-    }
-
-    @Override
-    public void notifyObservers() {
-        PrintEvent printEvent = new PrintEvent(spoolChangeCount, 0);
-        for (Observer observer : observers) {
-            observer.update(printEvent);
-        }
-    }
-
+public class EfficientSpoolChange extends BasePrintingStrategy implements PrintingStrategy {
     @Override
     public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
-        return "Hello from EfficientSpoolChange";
+        List<String> messages = new ArrayList<>();
+
+        for (PrintTask printTask : pendingPrintTasks) {
+            if (!printer.printFits(printTask.getPrint())) {
+                continue;
+            }
+
+            Spool selectedSpool = selectSmallestPossibleSpool(freeSpools, printTask);
+            if (selectedSpool != null) {
+                handleSpoolChange(printer, printTask, List.of(selectedSpool), messages);
+
+                printer.setTask(printTask);
+                pendingPrintTasks.remove(printTask);
+
+                notifyObservers();
+                return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Select the smallest possible spool that has enough filament to print the task.
+     * @param freeSpools the list of available spools
+     * @param printTask the print task to be completed
+     * @return the selected spool or null if no suitable spool is found
+     */
+    private Spool selectSmallestPossibleSpool(List<Spool> freeSpools, PrintTask printTask) {
+        return freeSpools.stream()
+                .filter(spool -> spool.getLength() >= printTask.getPrint().getLength() &&
+                        spool.getFilamentType() == printTask.getFilamentType())
+                .min(Comparator.comparingDouble(Spool::getLength))
+                .orElse(null);
     }
 }
