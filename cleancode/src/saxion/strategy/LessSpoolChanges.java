@@ -23,7 +23,6 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
     @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
-        System.out.println(observers);
     }
 
     @Override
@@ -41,7 +40,11 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
     }
 
     @Override
-    public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
+    public String selectPrintTask(
+            Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools
+    ) {
+        List<String> messages = new ArrayList<>();
+
         List<Spool> spools = printer.getCurrentSpools();
         PrintTask chosenTask = null;
 
@@ -50,16 +53,17 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
         }
 
         if (chosenTask == null) {
-            chosenTask = findTaskForFreeSpools(printer, pendingPrintTasks, freeSpools);
+            chosenTask = findTaskForFreeSpools(printer, pendingPrintTasks, freeSpools, messages);
         }
 
         if (chosenTask != null) {
             pendingPrintTasks.remove(chosenTask);
             printer.setTask(chosenTask);
-            System.out.println("- Started task: " + chosenTask.getPrint().getName() + " " + chosenTask.getFilamentType() + " on printer " + printer.getName());
+            messages.add("- Started task: " + chosenTask.getPrint().getName() + " "
+                    + chosenTask.getFilamentType() + " on printer " + printer.getName());
         }
 
-        return "";
+        return String.join("\n", messages);
     }
 
     private PrintTask findTaskForCurrentSpools(Printer printer, List<Spool> spools, List<PrintTask> pendingPrintTasks) {
@@ -74,10 +78,12 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
         return null;
     }
 
-    private PrintTask findTaskForFreeSpools(Printer printer, List<PrintTask> pendingPrintTasks, List<Spool> freeSpools) {
+    private PrintTask findTaskForFreeSpools(
+            Printer printer, List<PrintTask> pendingPrintTasks, List<Spool> freeSpools, List<String> messages
+    ) {
         for (PrintTask printTask : pendingPrintTasks) {
             if (printer.printFits(printTask.getPrint()) && printer.getTask() == null) {
-                if (handleSpoolChange(printer, printTask, freeSpools)) {
+                if (handleSpoolChange(printer, printTask, freeSpools, messages)) {
                     return printTask;
                 }
             }
@@ -118,37 +124,37 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
         return true;
     }
 
-    private boolean handleSpoolChange(Printer printer, PrintTask printTask, List<Spool> freeSpools) {
+    private boolean handleSpoolChange(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
         if (printer.isHoused()) {
-            return changeSpoolForHousedPrinter(printer, printTask, freeSpools);
+            return changeSpoolForHousedPrinter(printer, printTask, freeSpools, messages);
         } else if (printer instanceof MultiColor) {
-            return changeSpoolsForMultiColorPrinter((MultiColor) printer, printTask, freeSpools);
+            return changeSpoolsForMultiColorPrinter((MultiColor) printer, printTask, freeSpools, messages);
         } else {
-            return changeSpoolForStandardFDM(printer, printTask, freeSpools);
+            return changeSpoolForStandardFDM(printer, printTask, freeSpools, messages);
         }
     }
 
-    private boolean changeSpoolForStandardFDM(Printer printer, PrintTask printTask, List<Spool> freeSpools) {
+    private boolean changeSpoolForStandardFDM(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
         for (Spool spool : freeSpools) {
             if (spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType())) {
-                replaceSpool(printer, spool, freeSpools);
+                replaceSpool(printer, spool, freeSpools, messages);
                 return true;
             }
         }
         return false;
     }
 
-    private boolean changeSpoolForHousedPrinter(Printer printer, PrintTask printTask, List<Spool> freeSpools) {
+    private boolean changeSpoolForHousedPrinter(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
         for (Spool spool : freeSpools) {
             if (spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType())) {
-                replaceSpool(printer, spool, freeSpools);
+                replaceSpool(printer, spool, freeSpools, messages);
                 return true;
             }
         }
         return false;
     }
 
-    private boolean changeSpoolsForMultiColorPrinter(MultiColor printer, PrintTask printTask, List<Spool> freeSpools) {
+    private boolean changeSpoolsForMultiColorPrinter(MultiColor printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
         List<Spool> chosenSpools = new ArrayList<>();
         for (int i = 0; i < printTask.getColors().size(); i++) {
             for (Spool spool : freeSpools) {
@@ -160,13 +166,13 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
         }
 
         if (chosenSpools.size() == printTask.getColors().size()) {
-            replaceSpools(printer, chosenSpools, freeSpools);
+            replaceSpools(printer, chosenSpools, freeSpools, messages);
             return true;
         }
         return false;
     }
 
-    private void replaceSpool(Printer printer, Spool newSpool, List<Spool> freeSpools) {
+    private void replaceSpool(Printer printer, Spool newSpool, List<Spool> freeSpools, List<String> messages) {
         List<Spool> currentSpools = printer.getCurrentSpools();
         if (!currentSpools.isEmpty()) {
             freeSpools.add(currentSpools.get(0));
@@ -174,18 +180,20 @@ public class LessSpoolChanges implements PrintingStrategy, Observable {
         freeSpools.remove(newSpool);
         printer.setCurrentSpools(List.of(newSpool));
 
-        System.out.println("- Spool change: Please place spool " + newSpool.getId() + " in printer " + printer.getName());
-
+        messages.add("- Spool change: Please place spool " + newSpool.getId()
+                + " in printer " + printer.getName());
         notifyObservers();
     }
 
-    private void replaceSpools(Printer printer, List<Spool> newSpools, List<Spool> freeSpools) {
+    private void replaceSpools(Printer printer, List<Spool> newSpools, List<Spool> freeSpools, List<String> messages) {
         freeSpools.addAll(printer.getCurrentSpools());
         freeSpools.removeAll(newSpools);
         printer.setCurrentSpools(newSpools);
         int position = 1;
         for (Spool spool : newSpools) {
-            System.out.println("- Spool change: Please place spool " + spool.getId() + " in printer " + printer.getName() + " position " + position);
+            messages.add("- Spool change: Please place spool " + spool.getId()
+                    + " in printer " + printer.getName()
+                    + " position " + position);
             position++;
         }
 

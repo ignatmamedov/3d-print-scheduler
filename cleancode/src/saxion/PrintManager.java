@@ -228,12 +228,8 @@ public class PrintManager implements Observable, Observer {
 
     public void setPrintingStrategy(int strategyChoice) {
         switch (strategyChoice) {
-            case 1 -> {
-                printTaskHandler.setPrintingStrategy(lessSpoolChanges);
-            }
-            case 2 -> {
-                printTaskHandler.setPrintingStrategy(efficientSpoolChange);
-            }
+            case 1 -> printTaskHandler.setPrintingStrategy(lessSpoolChanges);
+            case 2 -> printTaskHandler.setPrintingStrategy(efficientSpoolChange);
         }
     }
 
