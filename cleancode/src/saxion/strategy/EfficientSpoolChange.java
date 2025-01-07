@@ -28,8 +28,11 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
                 printer.setTask(printTask);
                 iterator.remove();
 
-                notifyObservers();
-                return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName();
+                if (messages.isEmpty()) {
+                    return "- Started task: " + printTask.getPrint().getName() + " on printer " + printer.getName();
+                } else {
+                    return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName();
+                }
             }
         }
 
@@ -38,8 +41,9 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
 
     /**
      * Select the smallest possible spool that has enough filament to print the task.
+     *
      * @param freeSpools the list of available spools
-     * @param printTask the print task to be completed
+     * @param printTask  the print task to be completed
      * @return the selected spool or null if no suitable spool is found
      */
     private Spool selectSmallestPossibleSpool(List<Spool> freeSpools, PrintTask printTask) {

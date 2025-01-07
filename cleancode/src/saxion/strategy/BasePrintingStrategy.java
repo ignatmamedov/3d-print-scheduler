@@ -16,6 +16,12 @@ public class BasePrintingStrategy implements Observable {
     private final List<Observer> observers = new ArrayList<>();
     private int spoolChangeCount = 0;
 
+    protected void updateSpoolChangeCount() {
+        spoolChangeCount = 1;
+        notifyObservers();
+        spoolChangeCount = 0;
+    }
+
     @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
@@ -28,7 +34,6 @@ public class BasePrintingStrategy implements Observable {
 
     @Override
     public void notifyObservers() {
-        spoolChangeCount++;
         PrintEvent event = new PrintEvent(spoolChangeCount, 0);
         for (Observer observer : observers) {
             observer.update(event);
@@ -116,7 +121,8 @@ public class BasePrintingStrategy implements Observable {
 
         messages.add("- Spool change: Please place spool " + newSpool.getId()
                 + " in printer " + printer.getName());
-        notifyObservers();
+
+        updateSpoolChangeCount();
     }
 
     protected void replaceSpools(Printer printer, List<Spool> newSpools, List<Spool> freeSpools, List<String> messages) {
@@ -129,9 +135,8 @@ public class BasePrintingStrategy implements Observable {
                     + " in printer " + printer.getName()
                     + " position " + position);
             position++;
+            updateSpoolChangeCount();
         }
-
-        notifyObservers();
     }
 
     protected boolean containsSpool(final List<Spool> list, final String name) {
