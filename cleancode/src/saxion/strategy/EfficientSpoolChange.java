@@ -3,6 +3,7 @@ package saxion.strategy;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
+import saxion.types.FilamentType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +22,11 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
                 continue;
             }
 
-            Spool selectedSpool = selectSmallestPossibleSpool(freeSpools, printTask);
+            Spool selectedSpool = selectSmallestPossibleSpool(freeSpools, printTask, printer);
+            if (selectedSpool == null && !printer.getCurrentSpools().isEmpty()) {
+                selectedSpool = selectSmallestPossibleSpool(printer.getCurrentSpools(), printTask, printer);
+            }
+
             if (selectedSpool != null) {
                 handleSpoolChange(printer, printTask, new ArrayList<>(List.of(selectedSpool)), messages);
 
@@ -46,10 +51,18 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
      * @param printTask  the print task to be completed
      * @return the selected spool or null if no suitable spool is found
      */
-    private Spool selectSmallestPossibleSpool(List<Spool> freeSpools, PrintTask printTask) {
+    private Spool selectSmallestPossibleSpool(List<Spool> freeSpools, PrintTask printTask, Printer printer) {
+        if(!matchesCurrentPrinter(printer, printTask)){
+            return null;
+        }
+
         return freeSpools.stream()
-                .filter(spool -> spool.getLength() >= printTask.getPrint().getLength() &&
-                        spool.getFilamentType() == printTask.getFilamentType())
+                .filter(spool -> {
+                    boolean matches = spool.getLength() >= printTask.getPrint().getLength() &&
+                            spool.getFilamentType() == printTask.getFilamentType() &&
+                            spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
+                    return matches;
+                })
                 .min(Comparator.comparingDouble(Spool::getLength))
                 .orElse(null);
     }

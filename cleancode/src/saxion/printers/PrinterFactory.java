@@ -20,8 +20,8 @@ public class PrinterFactory {
             switch (type) {
                 case 1 -> {return new StandardFDM(id, name, manufacturer, false, maxX, maxY, maxZ);}
                 case 2 -> {return new StandardFDM(id, name, manufacturer, true, maxX, maxY, maxZ);}
-                case 3 -> {return new MultiColor(id, name, manufacturer, true, maxX, maxY, maxZ, maxColors);}
-                case 4 -> {return new MultiColor(id, name, manufacturer, false, maxX, maxY, maxZ, maxColors);}
+                case 3 -> {return new MultiColor(id, name, manufacturer, false, maxX, maxY, maxZ, maxColors);}
+                case 4 -> {return new MultiColor(id, name, manufacturer, true, maxX, maxY, maxZ, maxColors);}
                 default -> {throw new IllegalArgumentException("Invalid printer type: " + type);}
             }
         } catch (Exception e) {

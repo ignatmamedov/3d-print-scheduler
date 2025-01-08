@@ -60,11 +60,11 @@ public class LessSpoolChanges extends BasePrintingStrategy implements PrintingSt
 
     private boolean taskMatchesPrinterAndSpools(Printer printer, PrintTask printTask, List<Spool> spools) {
         if (printer.isHoused()) {
-            return matchesHousedPrinter(printTask, spools);
+            return matchesHousedPrinter(printTask) && matchesSpoolsForHousedPrinter(printTask, spools);
         } else if (printer instanceof MultiColor) {
-            return matchesMultiColorPrinter((MultiColor) printer, printTask, spools);
+            return matchesMultiColorPrinter((MultiColor) printer, printTask) && matchesSpoolsForMultiColorPrinter(printTask, spools);
         } else {
-            return matchesStandardFDM(printTask, spools);
+            return matchesStandardFDM(printTask) && matchesSpoolsForStandardFDM(printTask, spools);
         }
     }
 }

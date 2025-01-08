@@ -7,6 +7,7 @@ import saxion.observer.Observer;
 import saxion.observer.PrintEvent;
 import saxion.printers.MultiColor;
 import saxion.printers.Printer;
+import saxion.printers.StandardFDM;
 import saxion.types.FilamentType;
 
 import java.util.ArrayList;
@@ -40,21 +41,27 @@ public class BasePrintingStrategy implements Observable {
         }
     }
 
-    protected boolean matchesStandardFDM(PrintTask printTask, List<Spool> spools) {
-        return printTask.getFilamentType() != FilamentType.ABS && printTask.getColors().size() == 1
-                && spools.get(0).spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
+    protected boolean matchesStandardFDM(PrintTask printTask) {
+        return printTask.getFilamentType() != FilamentType.ABS && printTask.getColors().size() == 1;
     }
 
-    protected boolean matchesHousedPrinter(PrintTask printTask, List<Spool> spools) {
-        return printTask.getColors().size() == 1
-                && spools.get(0).spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
+    protected boolean matchesHousedPrinter(PrintTask printTask) {
+        return printTask.getColors().size() == 1;
     }
 
-    protected boolean matchesMultiColorPrinter(MultiColor printer, PrintTask printTask, List<Spool> spools) {
-        if (printTask.getFilamentType() == FilamentType.ABS || printTask.getColors().size() > printer.getMaxColors()) {
-            return false;
-        }
+    protected boolean matchesMultiColorPrinter(MultiColor printer, PrintTask printTask) {
+        return printTask.getFilamentType() != FilamentType.ABS && printTask.getColors().size() <= printer.getMaxColors();
+    }
 
+    protected boolean matchesSpoolsForStandardFDM(PrintTask printTask, List<Spool> spools) {
+        return spools.get(0).spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
+    }
+
+    protected boolean matchesSpoolsForHousedPrinter(PrintTask printTask, List<Spool> spools) {
+        return spools.get(0).spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
+    }
+
+    protected boolean matchesSpoolsForMultiColorPrinter(PrintTask printTask, List<Spool> spools) {
         for (int i = 0; i < spools.size() && i < printTask.getColors().size(); i++) {
             if (!spools.get(i).spoolMatch(printTask.getColors().get(i), printTask.getFilamentType())) {
                 return false;
@@ -64,13 +71,15 @@ public class BasePrintingStrategy implements Observable {
     }
 
     protected boolean handleSpoolChange(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
-        if (printer.isHoused()) {
+        if (printer.isHoused() && matchesHousedPrinter(printTask)) {
             return changeSpoolForHousedPrinter(printer, printTask, freeSpools, messages);
-        } else if (printer instanceof MultiColor) {
+        } else if (printer instanceof MultiColor && matchesMultiColorPrinter((MultiColor) printer, printTask)) {
             return changeSpoolsForMultiColorPrinter((MultiColor) printer, printTask, freeSpools, messages);
-        } else {
+        } else if (!printer.isHoused() && matchesStandardFDM(printTask)) {
             return changeSpoolForStandardFDM(printer, printTask, freeSpools, messages);
         }
+
+        return false;
     }
 
     protected boolean changeSpoolForStandardFDM(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
@@ -141,5 +150,15 @@ public class BasePrintingStrategy implements Observable {
 
     protected boolean containsSpool(final List<Spool> list, final String name) {
         return list.stream().anyMatch(o -> o.getColor().equals(name));
+    }
+
+    protected boolean matchesCurrentPrinter(Printer printer, PrintTask printTask) {
+        if(printer.isHoused()){
+            return matchesHousedPrinter(printTask);
+        } else if(printer instanceof MultiColor){
+            return matchesMultiColorPrinter((MultiColor) printer, printTask);
+        } else {
+            return matchesStandardFDM(printTask);
+        }
     }
 }
