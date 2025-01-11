@@ -58,6 +58,14 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
 
         return freeSpools.stream()
                 .filter(spool -> {
+                    if (spool.getFilamentType() == FilamentType.ABS && spool.getColor().equalsIgnoreCase(printTask.getColors().get(0))) {
+                        System.out.println("Checking spool: " + spool.toDTO());
+                        System.out.println("Spool filament type: " + spool.getFilamentType());
+                        System.out.println("Print task filament type: " + printTask.getFilamentType());
+                        System.out.println("Spool length: " + spool.getLength());
+                        System.out.println("Print task required length: " + printTask.getPrint().getLength());
+                        System.out.println("Spool color match: " + spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType()));
+                    }
                     boolean matches = spool.getLength() >= printTask.getPrint().getLength() &&
                             spool.getFilamentType() == printTask.getFilamentType() &&
                             spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
