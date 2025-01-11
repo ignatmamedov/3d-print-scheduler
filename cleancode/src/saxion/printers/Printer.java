@@ -71,4 +71,9 @@ public abstract class Printer {
         );
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

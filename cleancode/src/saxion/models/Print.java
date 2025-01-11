@@ -66,6 +66,11 @@ public class Print {
         return new Print(name, height, width, length, filamentLength, printTime);
     }
 
+    @Override
+    public String toString(){
+        return getName();
+    }
+
     public PrintDTO toDTO(){
         return new PrintDTO(name, height, width, length, filamentLength, printTime);
     }

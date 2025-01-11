@@ -123,13 +123,6 @@ public class PrintManager implements Observable, Observer {
         return result.toString();
     }
 
-    public void readPrints(String filename, boolean header) throws FileNotFoundException {
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_PRINTS_FILE;
-        }
-        prints = dataProvider.readFromFile(filename, Print.class, header);
-    }
-
     public void setPrintingStrategy(int strategyChoice) {
         switch (strategyChoice) {
             case 1 -> printTaskHandler.setPrintingStrategy(lessSpoolChanges);
@@ -167,9 +160,13 @@ public class PrintManager implements Observable, Observer {
         String printsFile = args.length > 0 ? args[0] : "";
         String spoolsFile = args.length > 1 ? args[1] : "";
         String printersFile = args.length > 2 ? args[2] : "";
-        readPrints(printsFile, true);
-        spoolHandler.readSpools(spoolsFile, true);
-        printerHandler.readPrinters(printersFile, true);
+        prints = dataProvider.readFromFile(printsFile, Print.class, true);
+        spoolHandler.setSpools(dataProvider.readFromFile(spoolsFile, Spool.class, true));
+        setPrinters(dataProvider.readFromFile(printersFile, Printer.class, true));
+    }
+
+    public void setPrinters(List<Printer> printers){
+        printerHandler.setPrinters(printers);
     }
 
     @Override

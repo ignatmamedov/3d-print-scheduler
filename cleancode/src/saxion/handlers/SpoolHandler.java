@@ -1,12 +1,10 @@
 package saxion.handlers;
 
-import saxion.dataprovider.DataProvider;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
 import saxion.types.FilamentType;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 public class SpoolHandler {
@@ -54,12 +52,8 @@ public class SpoolHandler {
         }
     }
 
-    public void readSpools(String filename, boolean header) throws FileNotFoundException {
-        DataProvider dataProvider = new DataProvider();
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_SPOOLS_FILE;
-        }
-        spools = dataProvider.readFromFile(filename, Spool.class, header);
-        freeSpools = new ArrayList<>(spools);
+    public void setSpools(List<Spool> spools){
+        this.spools = spools;
+        this.freeSpools = new ArrayList<>(spools);
     }
 }

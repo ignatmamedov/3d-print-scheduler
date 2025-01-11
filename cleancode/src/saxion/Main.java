@@ -10,12 +10,23 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 public class Main {
-    private final UserInput consoleInput = new ConsoleInput();
-    private final Facade facade = new Facade();
-    private final View<String> terminal = new TerminalView();
+    private UserInput consoleInput;
+    public Facade facade;
+    private View<String> terminal;
+
+    public Main(UserInput consoleInput, Facade facade, View<String> terminal){
+        this.consoleInput = consoleInput;
+        this.facade=facade;
+        this.terminal=terminal;
+    }
 
     public static void main(String[] args) {
-        new Main().run(args);
+        new Main(
+                new ConsoleInput(),
+                new Facade(),
+                new TerminalView()
+
+        ).run(args);
     }
 
     public void run(String[] args) {

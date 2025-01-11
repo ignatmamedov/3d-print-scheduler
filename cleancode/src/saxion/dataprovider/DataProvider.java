@@ -58,6 +58,17 @@ public class DataProvider {
     }
 
     public <T> List<T> readFromFile(String filename, Class<T> type, boolean header) throws FileNotFoundException {
+        if (filename.isEmpty()) {
+            if (type.equals(Spool.class)) {
+                filename = DEFAULT_SPOOLS_FILE;
+            } else if (type.equals(Print.class)) {
+                filename = DEFAULT_PRINTS_FILE;
+            } else if (type.equals(Printer.class)) {
+                filename = DEFAULT_PRINTERS_FILE;
+            } else {
+                throw new IllegalArgumentException("No default file defined for the given type: " + type.getSimpleName());
+            }
+        }
         if (filename.endsWith(".csv")) {
             return readCSV(filename, type, header);
         } else if (filename.endsWith(".json")) {

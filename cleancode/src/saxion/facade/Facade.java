@@ -137,4 +137,8 @@ public class Facade {
                 .map(Printer::getId)
                 .toList();
     }
+
+    public void setPrinters(List<Printer> printers){
+        printManager.setPrinters(printers);
+    }
 }

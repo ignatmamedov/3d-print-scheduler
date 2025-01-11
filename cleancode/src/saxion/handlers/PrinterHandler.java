@@ -4,11 +4,12 @@ import saxion.dataprovider.DataProvider;
 import saxion.printers.Printer;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PrinterHandler {
 
-    private List<Printer> printers;
+    private List<Printer> printers = new ArrayList<>();
 
     public List<Printer> getPrinters() {
         return printers;
@@ -32,14 +33,10 @@ public class PrinterHandler {
                 ));
     }
 
-    public void readPrinters(String filename, boolean header) throws FileNotFoundException {
-        DataProvider dataProvider = new DataProvider();
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_PRINTERS_FILE;
+    public void setPrinters(List<Printer> printers){
+        if (this.printers.isEmpty()){
+            this.printers = printers;
         }
-        printers = dataProvider.readFromFile(filename, Printer.class, header);
-        //TODO: Fix for printTaskHandler
-        //printTaskHandler.setPrinters(printers);
     }
 
 }
