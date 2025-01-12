@@ -35,11 +35,6 @@ public class MultiColor extends StandardFDM implements SpoolManager {
     }
 
     @Override
-    public boolean printFits(Print print) {
-        return false;
-    }
-
-    @Override
     public void setCurrentSpools(List<Spool> spools) {
         if (spools.size() > maxColors) {
             throw new IllegalArgumentException("Too many spools for this printer");
