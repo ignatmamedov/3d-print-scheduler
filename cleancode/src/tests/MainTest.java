@@ -33,7 +33,7 @@ class MainTest {
     private List<Print> prints;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private Map<Print, Integer> printMap;
-    private final Map<String, Map<Print, Map<Printer, Boolean>>> results = new HashMap<>();
+    private final Map<String, Map<Print, Map<Printer, Boolean>>> results = new LinkedHashMap<>();
 
     MainTest() throws FileNotFoundException {
         DataProvider dataProvider = new DataProvider();
@@ -45,10 +45,10 @@ class MainTest {
             printMap.put(prints.get(i), i + 1);
         }
 
-        for (Filament filament  : Filament.values()) {
-            results.put(filament.name(), new HashMap<>());
+        for (Filament filament : Filament.values()) {
+            results.put(filament.name(), new LinkedHashMap<>());
             for (Print print : prints) {
-                results.get(filament.name()).put(print, new HashMap<>());
+                results.get(filament.name()).put(print, new LinkedHashMap<>());
             }
         }
     }
