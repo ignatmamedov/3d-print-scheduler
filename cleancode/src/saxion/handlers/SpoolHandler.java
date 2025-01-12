@@ -46,6 +46,7 @@ public class SpoolHandler {
     }
 
     public void reduceSpoolLength(Printer printer, PrintTask task) {
+        //todo: remove spool if empty
         List<Spool> spools = printer.getCurrentSpools();
         for (int i = 0; i < spools.size() && i < task.getColors().size(); i++) {
             spools.get(i).reduceLength(task.getPrint().getFilamentLength().get(i));

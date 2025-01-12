@@ -31,17 +31,18 @@ public class Spool {
         }
         return false;
     }
+    //TODO: Ask why it was -= twice in the original code, but not +=...???
     /**
      * This method will try to reduce the length of the spool.
      *
-     * @param byLength
+     * @param byLength the length to reduce by
      * @return boolean which tells you if it is possible or not.
      */
     public boolean reduceLength(double byLength) {
         boolean success = true;
         this.length -= byLength;
         if (this.length < 0) {
-            this.length -= byLength;
+            this.length += byLength;
             success = false;
         }
         return success;
