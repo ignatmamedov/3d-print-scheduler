@@ -3,7 +3,6 @@ package saxion.strategy;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
-import saxion.types.FilamentType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,7 +17,12 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
         for (
                 Iterator<PrintTask> iterator = pendingPrintTasks.iterator(); iterator.hasNext(); ) {
             PrintTask printTask = iterator.next();
-            if (!printer.printFits(printTask.getPrint()) && printer.getTask() != null) {
+
+            if(printer.getTask() != null){
+                continue;
+            }
+
+            if(!printer.printFits(printTask.getPrint())){
                 continue;
             }
 
@@ -29,7 +33,6 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
 
             if (selectedSpool != null) {
                 handleSpoolChange(printer, printTask, new ArrayList<>(List.of(selectedSpool)), messages);
-
                 printer.setTask(printTask);
                 iterator.remove();
 
@@ -56,7 +59,6 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
         return freeSpools.stream()
                 .filter(spool -> {
                     boolean matches = spool.getLength() >= filamentLength &&
-                            spool.getFilamentType() == printTask.getFilamentType() &&
                             spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
                     return matches;
                 })

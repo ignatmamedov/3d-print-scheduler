@@ -36,6 +36,10 @@ public class PrintTaskHandler {
         return "Print task added to the queue";
     }
 
+    public void addNewPrintTask(PrintTask printTask) {
+        pendingPrintTasks.add(printTask);
+    }
+
     public String selectPrintTask(Printer printer, List<Spool> freeSpools) {
         return printingStrategy.selectPrintTask(printer, pendingPrintTasks, printers, freeSpools);
     }

@@ -33,6 +33,7 @@ public class Facade {
     public String registerPrinterStatus(int printerId, boolean isSuccessful) {
         String result = "-----------------------------------\n";
         result += printManager.finalizeRunningTask(printerId, isSuccessful);
+        result += System.lineSeparator();
         result += printManager.selectPrintTask(printerId);
         return result;
     }

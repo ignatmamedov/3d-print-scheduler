@@ -26,7 +26,6 @@ public class PrintManager implements Observable, Observer {
     private final DataProvider dataProvider;
     private List<Print> prints;
 
-    private List<PrintTask> pendingPrintTasks = new ArrayList<>();
     private List<String> selectedColors;
 
     private final List<Observer> observers = new ArrayList<>();
@@ -89,7 +88,7 @@ public class PrintManager implements Observable, Observer {
         Printer printer = printerHandler.getRunningPrinterById(printerId);
         PrintTask task = removeTaskFromPrinter(printer);
         if (!isSuccessful) {
-            pendingPrintTasks.add(task);
+            printTaskHandler.addNewPrintTask(task);
         } else {
             printsFulfilled++;
             notifyObservers();
