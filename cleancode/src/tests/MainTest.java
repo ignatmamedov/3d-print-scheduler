@@ -33,7 +33,7 @@ class MainTest {
     private List<Print> prints;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private Map<Print, Integer> printMap;
-    private final Map<String, Map<Print, Map<Printer, Boolean>>> results = new LinkedHashMap<>();
+    private final Map<Integer, Map<String, Map<Print, Map<Printer, Boolean>>>> results = new LinkedHashMap<>();
 
     MainTest() throws FileNotFoundException {
         DataProvider dataProvider = new DataProvider();
@@ -45,10 +45,13 @@ class MainTest {
             printMap.put(prints.get(i), i + 1);
         }
 
-        for (Filament filament : Filament.values()) {
-            results.put(filament.name(), new LinkedHashMap<>());
-            for (Print print : prints) {
-                results.get(filament.name()).put(print, new LinkedHashMap<>());
+        for (int strategy = 1; strategy <= 2; strategy++) {
+            results.put(strategy, new LinkedHashMap<>());
+            for (Filament filament : Filament.values()) {
+                results.get(strategy).put(filament.name(), new LinkedHashMap<>());
+                for (Print print : prints) {
+                    results.get(strategy).get(filament.name()).put(print, new LinkedHashMap<>());
+                }
             }
         }
     }
@@ -76,8 +79,21 @@ class MainTest {
 
     @ParameterizedTest(name = "{2} {1} on printer {0}")
     @MethodSource("providePrintersAndMaterialsAndPrints")
-    @DisplayName("Dynamic Test for Printers with different materials for each Print")
-    void testRun_withPrinter_andMaterial(Printer printer, Filament material, Print print) {
+    @DisplayName("Dynamic Test for Printers with different materials for each Print (Strategy 1)")
+    void testRun_withPrinter_andMaterial_strategy1(Printer printer, Filament material, Print print) {
+        facade.changePrintStrategy(1);
+        runTest(printer, material, print, 1);
+    }
+
+    @ParameterizedTest(name = "{2} {1} on printer {0}")
+    @MethodSource("providePrintersAndMaterialsAndPrints")
+    @DisplayName("Dynamic Test for Printers with different materials for each Print (Strategy 2)")
+    void testRun_withPrinter_andMaterial_strategy2(Printer printer, Filament material, Print print) {
+        facade.changePrintStrategy(2);
+        runTest(printer, material, print, 2);
+    }
+
+    private void runTest(Printer printer, Filament material, Print print, int strategy) {
         printer.setTask(null);
         facade.setPrinters(List.of(printer));
 
@@ -105,29 +121,37 @@ class MainTest {
         System.out.println(output);
 
         boolean success = output.contains(print.getName() + " " + material.name + " on printer " + printer.getName());
-        results.get(material.name()).get(print).put(printer, success);
+        results.get(strategy).get(material.name()).get(print).put(printer, success);
 
         assertTrue(success);
     }
 
     @AfterAll
     void writeResultsToCsv() throws IOException {
-        for (String filament : results.keySet()) {
-            File file = new File("./tests/" + filament + "_results.csv");
-            try (PrintWriter writer = new PrintWriter(file)) {
+        for (int strategy : results.keySet()) {
+            String path = "./tests/" + strategy + "/";
+            File directory = new File(path);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
 
-                writer.print("Print Name");
-                for (Printer printer : printers) {
-                    writer.print("," + printer.getName());
-                }
-                writer.println();
+            for (String filament : results.get(strategy).keySet()) {
+                File file = new File(path + filament + "_results.csv");
+                try (PrintWriter writer = new PrintWriter(file)) {
 
-                for (Map.Entry<Print, Map<Printer, Boolean>> entry : results.get(filament).entrySet()) {
-                    writer.print(entry.getKey().getName());
+                    writer.print("Print Name");
                     for (Printer printer : printers) {
-                        writer.print("," + (entry.getValue().getOrDefault(printer, false) ? "V" : "X"));
+                        writer.print("," + printer.getName());
                     }
                     writer.println();
+
+                    for (Map.Entry<Print, Map<Printer, Boolean>> entry : results.get(strategy).get(filament).entrySet()) {
+                        writer.print(entry.getKey().getName());
+                        for (Printer printer : printers) {
+                            writer.print("," + (entry.getValue().getOrDefault(printer, false) ? "V" : "X"));
+                        }
+                        writer.println();
+                    }
                 }
             }
         }

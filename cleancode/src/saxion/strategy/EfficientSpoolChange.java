@@ -33,11 +33,8 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
                 printer.setTask(printTask);
                 iterator.remove();
 
-                if (messages.isEmpty()) {
-                    return "- Started task: " + printTask.getPrint().getName() + " on printer " + printer.getName();
-                } else {
-                    return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName();
-                }
+                return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName() + " "
+                        + printTask.getFilamentType() + " on printer " + printer.getName();
             }
         }
 
@@ -55,18 +52,10 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
         if(!matchesCurrentPrinter(printer, printTask)){
             return null;
         }
-
+        double filamentLength = printTask.getPrint().getFilamentLength().stream().mapToDouble(Double::doubleValue).sum();
         return freeSpools.stream()
                 .filter(spool -> {
-                    if (spool.getFilamentType() == FilamentType.ABS && spool.getColor().equalsIgnoreCase(printTask.getColors().get(0))) {
-                        System.out.println("Checking spool: " + spool.toDTO());
-                        System.out.println("Spool filament type: " + spool.getFilamentType());
-                        System.out.println("Print task filament type: " + printTask.getFilamentType());
-                        System.out.println("Spool length: " + spool.getLength());
-                        System.out.println("Print task required length: " + printTask.getPrint().getLength());
-                        System.out.println("Spool color match: " + spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType()));
-                    }
-                    boolean matches = spool.getLength() >= printTask.getPrint().getLength() &&
+                    boolean matches = spool.getLength() >= filamentLength &&
                             spool.getFilamentType() == printTask.getFilamentType() &&
                             spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
                     return matches;
