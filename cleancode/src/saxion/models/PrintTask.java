@@ -2,7 +2,6 @@ package saxion.models;
 
 import saxion.facade.PrintTaskDTO;
 import saxion.types.FilamentType;
-import saxion.models.Print;
 
 import java.util.List;
 
