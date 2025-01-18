@@ -75,6 +75,7 @@ public class PrinterManager {
                 }
             }
         }
+
         if(chosenTask != null) {
             pendingPrintTasks.remove(chosenTask);
             System.out.println("- Started task: " + chosenTask + " on printer " + printer.getName());
@@ -82,6 +83,7 @@ public class PrinterManager {
             // If we didn't find a print for the current spool we search for a print with the free spools.
             for(PrintTask printTask: pendingPrintTasks) {
                 if(printer.printFits(printTask.getPrint()) && getPrinterCurrentTask(printer) == null) {
+                    // STEP 1: CHeck if compatible with StandardFDM
                     if (printer instanceof StandardFDM && printTask.getFilamentType() != FilamentType.ABS && printTask.getColors().size() == 1) {
                         Spool chosenSpool = null;
                         for (Spool spool : freeSpools) {
@@ -98,6 +100,7 @@ public class PrinterManager {
                             freePrinters.remove(printer);
                             chosenTask = printTask;
                         }
+                        // STEP 2: Check if compatible with HousedPrinter
                     } else if (printer instanceof HousedPrinter && printTask.getColors().size() == 1) {
                         Spool chosenSpool = null;
                         for (Spool spool : freeSpools) {
@@ -114,6 +117,7 @@ public class PrinterManager {
                             freePrinters.remove(printer);
                             chosenTask = printTask;
                         }
+                        // STEP 3: Check if compatible with MultiColor
                     } else if (printer instanceof MultiColor && printTask.getFilamentType() != FilamentType.ABS && printTask.getColors().size() <= ((MultiColor) printer).getMaxColors()) {
                         ArrayList<Spool> chosenSpools = new ArrayList<>();
                         for (int i = 0; i < printTask.getColors().size(); i++) {
