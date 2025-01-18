@@ -94,7 +94,8 @@ public class PrintManager implements Observable, Observer {
             notifyObservers();
         }
         spoolHandler.reduceSpoolLength(printer, task);
-        return "Task " + task + " removed from printer " + printer.getName();
+        return "Task " + task.getPrint().getName() + " "
+                + task.getFilamentType() + " removed from printer " + printer.getName();
     }
 
     public PrintTask removeTaskFromPrinter(Printer printer) {

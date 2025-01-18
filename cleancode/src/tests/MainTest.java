@@ -115,7 +115,7 @@ class MainTest {
         fakeInput.addInput(5);
         fakeInput.addInput(0);
 
-        main.run(new String[]{});
+        main.run(new String[]{"", "spools.csv", ""});
 
         String output = outContent.toString();
         System.out.println(output);

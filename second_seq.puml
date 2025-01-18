@@ -1,0 +1,34 @@
+@startuml
+actor Customer as C
+participant Webserver as WB
+actor PaymentProvider as PP
+participant "Deventer Server" as DV
+
+C -> WB: Start checkout for order
+activate C
+activate WB
+WB -->> C: Return delivery options
+C -> WB: Select pickup
+WB -->> C: Show locations
+C -> WB: Select Amsterdam
+WB -->> C: Start payment
+C -> PP: Pay for order
+activate PP
+PP -->> WB: Payment successful
+PP -->> C: Payment successful
+deactivate PP
+
+
+WB -> DV: Send Order details to Deventer Server
+activate DV
+DV -->> WB: Order assigned to Amsterdam
+WB -->> C: Order Placed
+deactivate WB
+deactivate C
+DV ->> WB: Order completed
+deactivate DV
+activate WB
+WB ->> C: Order prepared for pick up
+deactivate WB
+
+@enduml
