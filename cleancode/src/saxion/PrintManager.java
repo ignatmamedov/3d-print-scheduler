@@ -7,8 +7,10 @@ import saxion.handlers.SpoolHandler;
 import saxion.models.Print;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
+import saxion.observer.Observable;
+import saxion.observer.Observer;
+import saxion.observer.PrintEvent;
 import saxion.printers.Printer;
-import saxion.printers.StandardFDM;
 import saxion.strategy.EfficientSpoolChange;
 import saxion.strategy.LessSpoolChanges;
 import saxion.types.FilamentType;
@@ -16,47 +18,111 @@ import saxion.types.FilamentType;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-public class PrintManager {
+/**
+ * The main manager class for handling printing tasks, printers, and spools.
+ * Implements the {@link Observable} and {@link Observer} interfaces to handle
+ * observer pattern notifications.
+ */
+public class PrintManager implements Observable, Observer {
     private final PrintTaskHandler printTaskHandler;
     private final PrinterHandler printerHandler;
     private final SpoolHandler spoolHandler;
     private final DataProvider dataProvider;
-    private List<Spool> spools;
-    private List<Spool> freeSpools;
     private List<Print> prints;
-    private List<Printer> printers;
 
-    private List<PrintTask> pendingPrintTasks = new ArrayList<>();
+    private List<String> selectedColors;
 
+    private final List<Observer> observers = new ArrayList<>();
+    private final LessSpoolChanges lessSpoolChanges = new LessSpoolChanges();
+    private final EfficientSpoolChange efficientSpoolChange = new EfficientSpoolChange();
+    private int spoolChangeCount = 0;
+    private int printsFulfilled = 0;
+
+    /**
+     * Constructs a new {@code PrintManager} and initializes its handlers and strategies.
+     */
     public PrintManager() {
-        this.printTaskHandler = new PrintTaskHandler();
+        this.printTaskHandler = new PrintTaskHandler(lessSpoolChanges);
         this.printerHandler = new PrinterHandler();
         this.spoolHandler = new SpoolHandler();
         this.dataProvider = new DataProvider();
+
+        lessSpoolChanges.addObserver(this);
+        efficientSpoolChange.addObserver(this);
     }
 
-    public List<Print> getAvailablePrints() {
+    /**
+     * Retrieves the list of prints managed by this manager.
+     *
+     * @return an unmodifiable list of {@link Print} objects
+     */
+    public List<Print> getPrints() {
         return List.copyOf(prints);
     }
 
-    public String addNewPrintTask(String printName, int filamentType, List<String> colors) {
-        try {
-            FilamentType type = getFilamentType(filamentType);
-            Print print = getPrintByName(printName);
-            validateColors(colors, type);
+    /**
+     * Retrieves the number of prints managed by this manager.
+     *
+     * @return the size of the prints list
+     */
+    public int getPrintsSize(){
+        return prints.size();
+    }
 
-            return printTaskHandler.addNewPrintTask(print, colors, type);
+    /**
+     * Retrieves the spool handler used by this manager.
+     *
+     * @return the {@link SpoolHandler} instance
+     */
+    public SpoolHandler getSpoolHandler() {
+        return spoolHandler;
+    }
+
+    /**
+     * Retrieves the printer handler used by this manager.
+     *
+     * @return the {@link PrinterHandler} instance
+     */
+    public PrinterHandler getPrinterHandler() {
+        return printerHandler;
+    }
+
+    /**
+     * Adds a new print task to the queue.
+     *
+     * @param printName    the name of the print
+     * @param filamentType the type of filament required for the task
+     * @return a message indicating whether the task was successfully added or an error occurred
+     */
+    public String addNewPrintTask(String printName, int filamentType) {
+        try {
+            FilamentType type = FilamentType.getFilamentType(filamentType);
+            Print print = getPrintByName(printName);
+            spoolHandler.validateColors(selectedColors, type);
+
+            return printTaskHandler.addNewPrintTask(print, selectedColors, type);
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
     }
 
+    /**
+     * Retrieves the list of pending print tasks.
+     *
+     * @return a list of {@link PrintTask} objects
+     */
     public List<PrintTask> getPendingPrintTasks() {
         return printTaskHandler.getPendingPrintTasks();
     }
 
+    /**
+     * Retrieves a print object by its name.
+     *
+     * @param printName the name of the print to retrieve
+     * @return the {@link Print} object with the specified name
+     * @throws IllegalArgumentException if no print with the specified name is found
+     */
     private Print getPrintByName(String printName) {
         return prints.stream()
                 .filter(p -> p.getName().equals(printName))
@@ -64,34 +130,33 @@ public class PrintManager {
                 .orElseThrow(() -> new IllegalArgumentException("Print not found"));
     }
 
-    private void validateColors(List<String> colors, FilamentType type) {
-        for (String color : colors) {
-            boolean found = spools.stream()
-                    .anyMatch(spool -> spool.getColor().equals(color) && spool.getFilamentType() == type);
-            if (!found) {
-                throw new IllegalArgumentException("Color " + color + " (" + type + ") not found");
-            }
-        }
-    }
-
-    public FilamentType getFilamentType(int filamentType) {
-        return switch (filamentType) {
-            case 1 -> FilamentType.PLA;
-            case 2 -> FilamentType.PETG;
-            case 3 -> FilamentType.ABS;
-            default -> throw new IllegalArgumentException("Invalid filament type");
-        };
-    }
-
+    /**
+     * Finalizes a running task on a printer.
+     *
+     * @param printerId    the ID of the printer
+     * @param isSuccessful whether the task was successfully completed
+     * @return a message indicating the status of the task finalization
+     */
     public String finalizeRunningTask(int printerId, boolean isSuccessful) {
-        Printer printer = getPrinterById(printerId);
+        Printer printer = printerHandler.getRunningPrinterById(printerId);
         PrintTask task = removeTaskFromPrinter(printer);
         if (!isSuccessful) {
-            pendingPrintTasks.add(task);
+            printTaskHandler.addNewPrintTask(task);
+        } else {
+            printsFulfilled++;
+            notifyObservers();
         }
-        return "Task " + task + " removed from printer " + printer.getName();
+        spoolHandler.reduceSpoolLength(printer, task);
+        return "Task " + task.getPrint().getName() + " "
+                + task.getFilamentType() + " removed from printer " + printer.getName();
     }
 
+    /**
+     * Removes a task from a printer and updates spool usage.
+     *
+     * @param printer the {@link Printer} to remove the task from
+     * @return the removed {@link PrintTask}
+     */
     public PrintTask removeTaskFromPrinter(Printer printer) {
         PrintTask task = printer.getTask();
         printer.setTask(null);
@@ -102,43 +167,17 @@ public class PrintManager {
         return task;
     }
 
-    public Printer getPrinterById(int printerId) {
-        return printers.stream()
-                .filter(printer -> printer.getId() == printerId && printer.getTask() != null)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Cannot find a running task on printer with ID " + printerId
-                ));
-    }
-
-    public List<String> getAvailableColors(int filamentType) {
-        try {
-            FilamentType type = getFilamentType(filamentType);
-
-            List<String> availableColors = new ArrayList<>();
-            for (Spool spool : spools) {
-                if (spool.getFilamentType() == type && !availableColors.contains(spool.getColor())) {
-                    availableColors.add(spool.getColor());
-                }
-            }
-
-            return availableColors;
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    public int getRunningPrintTasksSize() {
-        return printTaskHandler.getRunningPrintTasksSize();
-    }
-
+    /**
+     * Starts the print queue, assigning tasks to available printers.
+     *
+     * @return a string summarizing the tasks assigned to printers
+     */
     public String startPrintQueue() {
         StringBuilder result = new StringBuilder();
-        for (Printer printer : printers) {
+        for (Printer printer : printerHandler.getPrinters()) {
             if (printer.getTask() == null) {
                 String output = selectPrintTask(printer);
-                if (output != null || !output.isBlank()) {
+                if (output != null && !output.isEmpty()) {
                     result.append(output);
                     result.append(System.lineSeparator());
                 }
@@ -148,71 +187,138 @@ public class PrintManager {
         return result.toString();
     }
 
-    public List<Print> getPrints() {
-        return prints;
-    }
-
-    public List<Spool> getSpools() {
-        return spools;
-    }
-
-    public List<Printer> getPrinters() {
-        return printers;
-    }
-
-    public void showPendingPrintTasks() {
-        printTaskHandler.showPendingPrintTasks();
-    }
-
-    public void readSpools(String filename, boolean header) throws FileNotFoundException {
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_SPOOLS_FILE;
-        }
-        spools = dataProvider.readFromFile(filename, Spool.class, header);
-        freeSpools = new ArrayList<>(spools);
-    }
-
-    public void readPrints(String filename, boolean header) throws FileNotFoundException {
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_PRINTS_FILE;
-        }
-        prints = dataProvider.readFromFile(filename, Print.class, header);
-    }
-
-    public void readPrinters(String filename, boolean header) throws FileNotFoundException {
-        if (filename.isEmpty()) {
-            filename = dataProvider.DEFAULT_PRINTERS_FILE;
-        }
-        printers = dataProvider.readFromFile(filename, Printer.class, header);
-        printTaskHandler.setPrinters(printers);
-    }
-
+    /**
+     * Sets the printing strategy based on user choice.
+     *
+     * @param strategyChoice the strategy choice: 1 for Less Spool Changes, 2 for Efficient Spool Usage
+     */
     public void setPrintingStrategy(int strategyChoice) {
         switch (strategyChoice) {
-            case 1 -> {
-                printTaskHandler.setPrintingStrategy(new LessSpoolChanges());
-            }
-            case 2 -> {
-                printTaskHandler.setPrintingStrategy(new EfficientSpoolChange());
-            }
+            case 1 -> printTaskHandler.setPrintingStrategy(lessSpoolChanges);
+            case 2 -> printTaskHandler.setPrintingStrategy(efficientSpoolChange);
         }
     }
 
+    /**
+     * Retrieves the available printing strategies.
+     *
+     * @return a list of strategy names
+     */
     public List<String> getAvailableStrategies() {
         return List.of("Less spool changes", "Efficient Spool usage");
     }
 
+    /**
+     * Selects a print task for the specified printer by its ID.
+     *
+     * @param printerId the ID of the printer for which a print task is being selected
+     * @return a string describing the selected print task or an error message if no task could be selected
+     */
     public String selectPrintTask(int printerId) {
         try {
-            Printer printer = getPrinterById(printerId);
+            Printer printer = printerHandler.getPrinterById(printerId);
             return selectPrintTask(printer);
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
     }
 
+    /**
+     * Selects a print task for the specified printer.
+     *
+     * @param printer the {@link Printer} for which a print task is being selected
+     * @return a string describing the selected print task or {@code null} if no task could be selected
+     */
     private String selectPrintTask(Printer printer) {
-        return printTaskHandler.selectPrintTask(printer, freeSpools);
+        return printTaskHandler.selectPrintTask(printer, spoolHandler.getFreeSpools());
     }
 
+
+    /**
+     * Creates a new list to store the selected colors for a print task.
+     * This method initializes the {@code selectedColors} field as an empty list.
+     */
+    public void createSelectedColorsList() {
+        selectedColors = new ArrayList<>();
+    }
+
+    /**
+     * Adds a selected color to the list of selected colors for a print task.
+     *
+     * @param filamentType the type of filament as an integer
+     * @param colorChoice  the index of the selected color
+     * @throws IndexOutOfBoundsException if the colorChoice is invalid
+     */
+    public void addSelectedColors(Integer filamentType, Integer colorChoice) {
+        List<String> colors = spoolHandler.getAvailableColors(filamentType);
+        selectedColors.add(colors.get(colorChoice - 1));
+    }
+
+    /**
+     * Reads data from the specified files to initialize prints, spools, and printers.
+     *
+     * @param args an array containing file names for prints, spools, and printers in order
+     * @throws FileNotFoundException if any of the files are not found
+     */
+    public void readData(String[] args) throws FileNotFoundException {
+        String printsFile = args.length > 0 ? args[0] : "";
+        String spoolsFile = args.length > 1 ? args[1] : "";
+        String printersFile = args.length > 2 ? args[2] : "";
+        prints = dataProvider.readFromFile(printsFile, Print.class, true);
+        spoolHandler.setSpools(dataProvider.readFromFile(spoolsFile, Spool.class, true));
+        setPrinters(dataProvider.readFromFile(printersFile, Printer.class, true));
+    }
+
+    /**
+     * Sets the list of printers managed by this manager.
+     *
+     * @param printers the list of {@link Printer} objects to set
+     */
+    public void setPrinters(List<Printer> printers){
+        printerHandler.setPrinters(printers);
+    }
+
+    /**
+     * Adds an observer to be notified of print-related events.
+     *
+     * @param observer the {@link Observer} to add
+     */
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    /**
+     * Removes an observer from the list of observers.
+     *
+     * @param observer the {@link Observer} to remove
+     */
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    /**
+     * Notifies all observers about the current print-related events, such as spool changes
+     * or completed prints.
+     */
+    @Override
+    public void notifyObservers() {
+        PrintEvent event = new PrintEvent(spoolChangeCount, printsFulfilled);
+        for (Observer observer : observers) {
+            observer.update(event);
+        }
+    }
+
+    /**
+     * Updates the manager with a new print event. The event contains the number of spool changes
+     * and completed prints to update the internal state of the manager.
+     *
+     * @param event the {@link PrintEvent} containing spool change and print fulfillment information
+     */
+    @Override
+    public void update(PrintEvent event) {
+        spoolChangeCount += event.getSpoolChangeCount();
+        printsFulfilled += event.getPrintsFulfilled();
+    }
 }

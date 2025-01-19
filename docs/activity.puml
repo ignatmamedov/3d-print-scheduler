@@ -1,0 +1,41 @@
+@startuml
+|c| Customer
+start
+:Place an Order;
+|wb| Webserver
+:Save Order;
+:Notify Deventer Server;
+|dv| Deventer server
+:Forward Order to Print Farm;
+|pf| Print Farm server
+repeat
+:Update current print farm status;
+:Run scheduler with Print;
+|3d| 3DScheduler
+:Select printer for receiving print;
+|pf| Print Farm server
+:Request printer activation;
+|cp| Computers with USB ports
+:Assign print task to printer;
+|p| Printer
+:Start printing;
+:Notify computer with print status;
+|cp| Computers with USB ports
+:Return print status to Print Farm;
+|pf| Print Farm server
+:Notify employee of print status;
+|e| Employee
+:Approve status;
+:Remove print from printer;
+repeat while (Print successful?)
+:Label print;
+|pf| Print Farm server;
+:Notify Deventer Server;
+|dv| Deventer server
+:Update Order;
+|wb| Webserver
+:Notify Customer about Order status;
+|c| Customer
+:Pick up Delivery;
+stop
+@enduml

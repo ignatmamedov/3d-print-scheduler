@@ -1,0 +1,56 @@
+@startuml
+
+participant "Deventer Server" as DV
+participant "Print Farm Server" as PF
+participant "3D Scheduler" as Scheduler
+participant "Computers with USB ports" as CP
+participant Printer as P
+actor Employee as E
+
+activate DV
+DV ->> PF: Redirect Order to Print Farm
+activate PF
+PF -->> DV: Confirm Order received
+deactivate DV
+PF ->> CP: Request current status
+activate CP
+CP -->> PF: Provide current spool and printer status
+deactivate CP
+PF -> PF: Update data
+PF -> Scheduler: Request a suitable printer
+activate Scheduler
+Scheduler --> PF: Provide suitable printer
+deactivate Scheduler
+PF ->> CP: Assing task to printer
+deactivate PF
+activate CP
+CP -> P: Redirect task to printer
+activate P
+P -->> CP: Confirm Printing started
+deactivate CP
+P -> P: Printing
+P ->> CP: Notify computer with print status
+deactivate P
+activate CP
+CP ->> PF: Provide print status
+deactivate CP
+activate PF
+PF ->> E: Inform Employee about print status
+deactivate PF
+activate E
+E -> P: Remove print from printer
+activate P
+P -> E: Provide print to Employee
+deactivate P
+E -> E: Label print
+E -->> PF: Confirm print status
+deactivate E
+activate PF
+PF -> PF: Update data
+PF ->> DV: Send print status to office
+activate DV
+DV -->> PF: Mark order as complete
+deactivate DV
+deactivate PF
+
+@enduml

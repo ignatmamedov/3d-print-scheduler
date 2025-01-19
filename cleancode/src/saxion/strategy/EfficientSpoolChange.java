@@ -4,11 +4,92 @@ import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
-public class EfficientSpoolChange implements PrintingStrategy{
+/**
+ * Implements a printing strategy that minimizes filament waste by selecting the smallest possible spool
+ * that can complete a print task.
+ */
+public class EfficientSpoolChange extends BasePrintingStrategy implements PrintingStrategy {
+
+    /**
+     * Selects a print task for a specific printer based on the available spools and printer capabilities.
+     * The selection process prioritizes efficiency by minimizing filament waste.
+     *
+     * @param printer          the {@link Printer} for which a print task is being selected
+     * @param pendingPrintTasks the list of pending {@link PrintTask}s
+     * @param printers         the list of all available printers
+     * @param freeSpools       the list of free {@link Spool}s available for use
+     * @return a string containing the selected print task details or {@code null} if no task could be selected
+     */
     @Override
-    public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
-        return "Hello from EfficientSpoolChange";
+    public String selectPrintTask(
+            Printer printer,
+            List<PrintTask> pendingPrintTasks,
+            List<Printer> printers,
+            List<Spool> freeSpools
+    ) {
+        List<String> messages = new ArrayList<>();
+
+        for (
+                Iterator<PrintTask> iterator = pendingPrintTasks.iterator(); iterator.hasNext(); ) {
+            PrintTask printTask = iterator.next();
+
+            if(printer.getTask() != null){
+                continue;
+            }
+
+            if(!printer.printFits(printTask.getPrint())){
+                continue;
+            }
+
+            Spool selectedSpool = selectSmallestPossibleSpool(freeSpools, printTask, printer);
+            if (selectedSpool == null && !printer.getCurrentSpools().isEmpty()) {
+                selectedSpool = selectSmallestPossibleSpool(printer.getCurrentSpools(), printTask, printer);
+            }
+
+            if (selectedSpool != null) {
+                handleSpoolChange(printer, printTask, new ArrayList<>(List.of(selectedSpool)), messages);
+                printer.setTask(printTask);
+                iterator.remove();
+
+                return String.join("\n", messages)
+                        + "\n- Started task: " + printTask.getPrint().getName()
+                        + " "
+                        + printTask.getFilamentType() + " on printer "
+                        + printer.getName();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Select the smallest possible spool that has enough filament to print the task.
+     *
+     * @param freeSpools the list of available spools
+     * @param printTask  the print task to be completed
+     * @return the selected spool or null if no suitable spool is found
+     */
+    private Spool selectSmallestPossibleSpool(List<Spool> freeSpools, PrintTask printTask, Printer printer) {
+        if(!matchesCurrentPrinter(printer, printTask)){
+            return null;
+        }
+        double filamentLength = printTask
+                .getPrint()
+                .getFilamentLength()
+                .stream()
+                .mapToDouble(Double::doubleValue).sum();
+        return freeSpools.stream()
+                .filter(spool -> {
+                    boolean matches = spool.getLength() >= filamentLength &&
+                            spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType());
+                    return matches;
+                })
+                .min(Comparator.comparingDouble(Spool::getLength))
+                .orElse(null);
     }
 }
