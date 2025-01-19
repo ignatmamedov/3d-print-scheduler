@@ -15,6 +15,10 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+// !!!!!!!!!!
+// IF YOU OPEN THIS, IT MEANS YOU ARE LOOKING IN THE WRONG PLACE
+// PLEASE GO TO cleancode/src/saxion/Main.java
+// !!!!!!!!!!
 public class Main {
     private final PrinterManager manager = new PrinterManager();
     private final ConsoleInput consoleInput = new ConsoleInput();
