@@ -7,7 +7,19 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Utility class for providing file readers from resources.
+ */
 public class FileProvider {
+
+    /**
+     * Retrieves a {@link Reader} for the specified resource file.
+     *
+     * @param filename the name of the resource file
+     * @return a {@link Reader} for reading the file's content
+     * @throws FileNotFoundException    if the resource file is not found
+     * @throws IllegalArgumentException if the filename is null or empty
+     */
     public static Reader getReaderFromResource(String filename) throws FileNotFoundException {
         if (filename == null || filename.isEmpty()) {
             throw new IllegalArgumentException("Filename cannot be null or empty");

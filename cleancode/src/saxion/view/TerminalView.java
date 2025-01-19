@@ -10,13 +10,28 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * The `TerminalView` class implements the {@link View} interface to provide
+ * methods for displaying and formatting data for terminal output.
+ */
 public class TerminalView implements View<String>{
 
+    /**
+     * Displays a given string in the terminal.
+     *
+     * @param string the string to display
+     */
     @Override
     public void show(String string){
         System.out.println(string);
     }
 
+    /**
+     * Formats a {@link PrintDTO} object as a human-readable string for terminal output.
+     *
+     * @param print the {@link PrintDTO} to format
+     * @return a formatted string representation of the print
+     */
     @Override
     public String formatPrintDTO(PrintDTO print){
         return "--------" + System.lineSeparator() +
@@ -29,6 +44,12 @@ public class TerminalView implements View<String>{
                 "--------";
     }
 
+    /**
+     * Formats a {@link SpoolDTO} object as a human-readable string for terminal output.
+     *
+     * @param spool the {@link SpoolDTO} to format
+     * @return a formatted string representation of the spool
+     */
     @Override
     public String formatSpoolDTO(SpoolDTO spool){
         return  "--------" + System.lineSeparator() +
@@ -38,6 +59,13 @@ public class TerminalView implements View<String>{
                 "- length: " + spool.length() + System.lineSeparator() +
                 "--------";
     }
+
+    /**
+     * Formats a {@link PrintTaskDTO} object as a human-readable string for terminal output.
+     *
+     * @param printTask the {@link PrintTaskDTO} to format
+     * @return a formatted string representation of the print task
+     */
     @Override
     public String formatPrintTaskDTO(PrintTaskDTO printTask){
         return "< " + printTask.print() +
@@ -46,6 +74,12 @@ public class TerminalView implements View<String>{
                 " >";
     }
 
+    /**
+     * Formats a {@link PrinterDTO} object as a human-readable string for terminal output.
+     *
+     * @param printer the {@link PrinterDTO} to format
+     * @return a formatted string representation of the printer
+     */
     @Override
     public String formatPrinterDTO(PrinterDTO printer){
         StringBuilder result = new StringBuilder();
@@ -78,6 +112,4 @@ public class TerminalView implements View<String>{
 
         return result.toString();
     }
-
-
 }

@@ -9,7 +9,22 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Implements a printing strategy that minimizes filament waste by selecting the smallest possible spool
+ * that can complete a print task.
+ */
 public class EfficientSpoolChange extends BasePrintingStrategy implements PrintingStrategy {
+
+    /**
+     * Selects a print task for a specific printer based on the available spools and printer capabilities.
+     * The selection process prioritizes efficiency by minimizing filament waste.
+     *
+     * @param printer          the {@link Printer} for which a print task is being selected
+     * @param pendingPrintTasks the list of pending {@link PrintTask}s
+     * @param printers         the list of all available printers
+     * @param freeSpools       the list of free {@link Spool}s available for use
+     * @return a string containing the selected print task details or {@code null} if no task could be selected
+     */
     @Override
     public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
         List<String> messages = new ArrayList<>();
