@@ -86,7 +86,8 @@ public class Facade {
      */
     public String getColorsOptions(Integer filamentType) {
         List<String> colors = printManager.getSpoolHandler().getAvailableColors(filamentType);
-        List<String> colorsWithFilament = colors.stream().map(color -> color + " (" + FilamentType.getFilamentType(filamentType) + ")").toList();
+        List<String> colorsWithFilament = colors.stream()
+                .map(color -> color + " (" + FilamentType.getFilamentType(filamentType) + ")").toList();
         return menuPrinter.displayOptions(colorsWithFilament, "Colors", true);
     }
 
@@ -96,7 +97,9 @@ public class Facade {
      * @return a string displaying the available strategies
      */
     public String getAvailableStrategies() {
-        return menuPrinter.displayOptions(printManager.getAvailableStrategies(), "Strategies", true);
+        return menuPrinter.displayOptions(
+                printManager.getAvailableStrategies(), "Strategies", true
+        );
     }
 
     /**

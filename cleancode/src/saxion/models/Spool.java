@@ -109,10 +109,16 @@ public class Spool {
      * @return a new {@code Spool} instance
      */
     public static Spool fromMap(Map<String, Object> map) {
-        int id = Integer.parseInt(map.getOrDefault("id", map.getOrDefault("1", "0")).toString());
+        int id = Integer.parseInt(map.getOrDefault(
+                "id", map.getOrDefault("1", "0")).toString()
+        );
         String color = map.getOrDefault("color", map.getOrDefault("2", "unknown")).toString();
-        FilamentType type = FilamentType.valueOf(map.getOrDefault("filamentType", map.getOrDefault("3", "DEFAULT_TYPE")).toString());
-        double length = Double.parseDouble(map.getOrDefault("length", map.getOrDefault("4", "0.0")).toString());
+        FilamentType type = FilamentType.valueOf(
+                map.getOrDefault("filamentType", map.getOrDefault("3", "DEFAULT_TYPE")
+                ).toString());
+        double length = Double.parseDouble(map.getOrDefault(
+                "length", map.getOrDefault("4", "0.0")
+        ).toString());
 
         return new Spool(id, color, type, length);
     }

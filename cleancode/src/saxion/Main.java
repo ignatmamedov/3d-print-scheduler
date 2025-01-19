@@ -119,7 +119,9 @@ public class Main {
 
         facade.createSelectedColorsList();
         for (int i = 0; i < facade.getFilamentColorsNumber(printChoice); i++) {
-            int colorChoice = consoleInput.getIntInput("Color number: ", 1, facade.getColorsSize(filamentType));
+            int colorChoice = consoleInput.getIntInput(
+                    "Color number: ", 1, facade.getColorsSize(filamentType)
+            );
             facade.addSelectedColors(filamentType, colorChoice);
         }
 
@@ -130,28 +132,48 @@ public class Main {
      * Displays information about the available spools.
      */
     private void showSpools() {
-        showSection("---------- Spools ----------", facade.getSpools(), terminal::formatSpoolDTO, null);
+        showSection(
+                "---------- Spools ----------",
+                facade.getSpools(),
+                terminal::formatSpoolDTO,
+                null
+        );
     }
 
     /**
      * Displays information about pending print tasks.
      */
     private void showPendingPrintTasks() {
-        showSection("--------- Pending Print Tasks ---------", facade.getPendingPrintTasks(), terminal::formatPrintTaskDTO, null);
+        showSection(
+                "--------- Pending Print Tasks ---------",
+                facade.getPendingPrintTasks(),
+                terminal::formatPrintTaskDTO,
+                null
+        );
     }
 
     /**
      * Displays information about available printers.
      */
     private void showPrinters() {
-        showSection("--------- Available Printers ---------", facade.getPrinters(), terminal::formatPrinterDTO, null);
+        showSection(
+                "--------- Available Printers ---------",
+                facade.getPrinters(),
+                terminal::formatPrinterDTO,
+                null
+        );
     }
 
     /**
      * Displays information about available prints.
      */
     private void showPrints() {
-        showSection("---------- Available Prints ----------", facade.getPrints(), terminal::formatPrintDTO, "--------------------------------------");
+        showSection(
+                "---------- Available Prints ----------",
+                facade.getPrints(),
+                terminal::formatPrintDTO,
+                "--------------------------------------"
+        );
     }
 
     /**
@@ -177,7 +199,12 @@ public class Main {
      * @param itemSeparator the separator between items, or {@code null} if no separator is needed
      * @param <T>           the type of items to display
      */
-    private <T> void showSection(String header, Iterator<T> iterator, Function<T, String> formatter, String itemSeparator) {
+    private <T> void showSection(
+            String header,
+            Iterator<T> iterator,
+            Function<T, String> formatter,
+            String itemSeparator
+    ) {
         terminal.show(header);
         while (iterator.hasNext()) {
             T item = iterator.next();

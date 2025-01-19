@@ -22,7 +22,12 @@ public class LessSpoolChanges extends BasePrintingStrategy implements PrintingSt
      * @return a string containing the selected print task details or an empty string if no task could be selected
      */
     @Override
-    public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
+    public String selectPrintTask(
+            Printer printer,
+            List<PrintTask> pendingPrintTasks,
+            List<Printer> printers,
+            List<Spool> freeSpools
+    ) {
         List<String> messages = new ArrayList<>();
 
         List<Spool> spools = printer.getCurrentSpools();
@@ -100,7 +105,8 @@ public class LessSpoolChanges extends BasePrintingStrategy implements PrintingSt
         if (printer.isHoused()) {
             return matchesHousedPrinter(printTask) && matchesSpoolsForHousedPrinter(printTask, spools);
         } else if (printer instanceof MultiColor) {
-            return matchesMultiColorPrinter((MultiColor) printer, printTask) && matchesSpoolsForMultiColorPrinter(printTask, spools);
+            return matchesMultiColorPrinter((MultiColor) printer, printTask)
+                    && matchesSpoolsForMultiColorPrinter(printTask, spools);
         } else {
             return matchesStandardFDM(printTask) && matchesSpoolsForStandardFDM(printTask, spools);
         }

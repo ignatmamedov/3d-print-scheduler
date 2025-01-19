@@ -21,5 +21,10 @@ public interface PrintingStrategy {
      * @param freeSpools       the list of free {@link Spool}s available for use
      * @return a string describing the selected print task and its assignment, or {@code null} if no task was selected
      */
-    String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools);
+    String selectPrintTask(
+            Printer printer,
+            List<PrintTask> pendingPrintTasks,
+            List<Printer> printers,
+            List<Spool> freeSpools
+    );
 }

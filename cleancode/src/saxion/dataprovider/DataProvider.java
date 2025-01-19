@@ -126,7 +126,9 @@ public class DataProvider {
             } else if (type.equals(Printer.class)) {
                 filename = DEFAULT_PRINTERS_FILE;
             } else {
-                throw new IllegalArgumentException("No default file defined for the given type: " + type.getSimpleName());
+                throw new IllegalArgumentException(
+                        "No default file defined for the given type: " + type.getSimpleName()
+                );
             }
         }
         if (filename.endsWith(".csv")) {

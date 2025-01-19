@@ -34,7 +34,7 @@ public class JsonAdapter implements SourceAdapter {
     /**
      * Reads all records from the JSON data.
      *
-     * @param header a flag indicating if the first record should be treated as a header (not used in this implementation)
+     * @param header a flag indicating if the first record should be treated as a header
      * @return an {@link Iterator} of {@code HashMap<String, Object>} where each map represents a JSON record
      */
     @Override

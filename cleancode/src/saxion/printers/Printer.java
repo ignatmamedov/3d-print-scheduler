@@ -51,7 +51,11 @@ public abstract class Printer {
      * @param printerName the name of the printer
      * @param manufacturer the manufacturer of the printer
      */
-    public Printer(int id, String printerName, String manufacturer) {
+    public Printer(
+            int id,
+            String printerName,
+            String manufacturer
+    ) {
         this(id, printerName, manufacturer, false);
     }
 

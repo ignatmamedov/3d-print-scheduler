@@ -1,7 +1,6 @@
 package saxion.input;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The `UserInput` interface defines methods for handling user input.

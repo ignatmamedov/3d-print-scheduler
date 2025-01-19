@@ -27,12 +27,11 @@ class MainTest {
 
     private FakeUserInput fakeInput;
     private Facade facade;
-    private View<String> terminal;
     private Main main;
-    private List<Printer> printers;
-    private List<Print> prints;
+    private final List<Printer> printers;
+    private final List<Print> prints;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private Map<Print, Integer> printMap;
+    private final Map<Print, Integer> printMap;
     private final Map<Integer, Map<String, Map<Print, Map<Printer, Boolean>>>> results = new LinkedHashMap<>();
 
     MainTest() throws FileNotFoundException {
@@ -60,7 +59,7 @@ class MainTest {
     void setUp() {
         fakeInput = new FakeUserInput();
         facade = new Facade();
-        terminal = new TerminalView();
+        View<String> terminal = new TerminalView();
         main = new Main(fakeInput, facade, terminal);
 
         outContent.reset();

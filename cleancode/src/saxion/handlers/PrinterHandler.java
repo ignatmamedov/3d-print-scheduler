@@ -1,9 +1,7 @@
 package saxion.handlers;
 
-import saxion.dataprovider.DataProvider;
 import saxion.printers.Printer;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 

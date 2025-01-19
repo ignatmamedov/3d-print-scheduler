@@ -36,7 +36,15 @@ public class StandardFDM extends Printer implements SpoolManager {
      * @param maxY         the maximum depth (Y dimension) in millimeters
      * @param maxZ         the maximum height (Z dimension) in millimeters
      */
-    public StandardFDM(int id, String printerName, String manufacturer, boolean isHoused, int maxX, int maxY, int maxZ) {
+    public StandardFDM(
+            int id,
+            String printerName,
+            String manufacturer,
+            boolean isHoused,
+            int maxX,
+            int maxY,
+            int maxZ
+    ) {
         super(id, printerName, manufacturer, isHoused);
         this.maxX = maxX;
         this.maxY = maxY;

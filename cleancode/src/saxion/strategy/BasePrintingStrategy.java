@@ -7,7 +7,6 @@ import saxion.observer.Observer;
 import saxion.observer.PrintEvent;
 import saxion.printers.MultiColor;
 import saxion.printers.Printer;
-import saxion.printers.StandardFDM;
 import saxion.types.FilamentType;
 
 import java.util.ArrayList;
@@ -94,7 +93,8 @@ public class BasePrintingStrategy implements Observable {
      * @return {@code true} if the task matches; {@code false} otherwise
      */
     protected boolean matchesMultiColorPrinter(MultiColor printer, PrintTask printTask) {
-        return printTask.getFilamentType() != FilamentType.ABS && printTask.getColors().size() <= printer.getMaxColors();
+        return printTask.getFilamentType() != FilamentType.ABS
+                && printTask.getColors().size() <= printer.getMaxColors();
     }
 
     /**
@@ -165,7 +165,12 @@ public class BasePrintingStrategy implements Observable {
      * @param messages   the list of messages to append spool change instructions
      * @return {@code true} if the spool was successfully changed; {@code false} otherwise
      */
-    protected boolean changeSpoolForStandardFDM(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
+    protected boolean changeSpoolForStandardFDM(
+            Printer printer,
+            PrintTask printTask,
+            List<Spool> freeSpools,
+            List<String> messages
+    ) {
         for (Spool spool : freeSpools) {
             if (spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType())) {
                 replaceSpool(printer, spool, freeSpools, messages);
@@ -184,7 +189,12 @@ public class BasePrintingStrategy implements Observable {
      * @param messages   the list of messages to append spool change instructions
      * @return {@code true} if the spool was successfully changed; {@code false} otherwise
      */
-    protected boolean changeSpoolForHousedPrinter(Printer printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
+    protected boolean changeSpoolForHousedPrinter(
+            Printer printer,
+            PrintTask printTask,
+            List<Spool> freeSpools,
+            List<String> messages
+    ) {
         for (Spool spool : freeSpools) {
             if (spool.spoolMatch(printTask.getColors().get(0), printTask.getFilamentType())) {
                 replaceSpool(printer, spool, freeSpools, messages);
@@ -203,11 +213,17 @@ public class BasePrintingStrategy implements Observable {
      * @param messages   the list of messages to append spool change instructions
      * @return {@code true} if the spools were successfully changed; {@code false} otherwise
      */
-    protected boolean changeSpoolsForMultiColorPrinter(MultiColor printer, PrintTask printTask, List<Spool> freeSpools, List<String> messages) {
+    protected boolean changeSpoolsForMultiColorPrinter(
+            MultiColor printer,
+            PrintTask printTask,
+            List<Spool> freeSpools,
+            List<String> messages
+    ) {
         List<Spool> chosenSpools = new ArrayList<>();
         for (int i = 0; i < printTask.getColors().size(); i++) {
             for (Spool spool : freeSpools) {
-                if (spool.spoolMatch(printTask.getColors().get(i), printTask.getFilamentType()) && !containsSpool(chosenSpools, printTask.getColors().get(i))) {
+                if (spool.spoolMatch(printTask.getColors().get(i), printTask.getFilamentType())
+                        && !containsSpool(chosenSpools, printTask.getColors().get(i))) {
                     chosenSpools.add(spool);
                     break;
                 }
@@ -251,7 +267,12 @@ public class BasePrintingStrategy implements Observable {
      * @param freeSpools   the list of available spools
      * @param messages     the list of messages to append spool change instructions
      */
-    protected void replaceSpools(Printer printer, List<Spool> newSpools, List<Spool> freeSpools, List<String> messages) {
+    protected void replaceSpools(
+            Printer printer,
+            List<Spool> newSpools,
+            List<Spool> freeSpools,
+            List<String> messages
+    ) {
         freeSpools.addAll(printer.getCurrentSpools());
         freeSpools.removeAll(newSpools);
         printer.setCurrentSpools(newSpools);

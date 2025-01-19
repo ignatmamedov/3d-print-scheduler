@@ -13,22 +13,22 @@ import java.util.List;
 public class Print {
 
     /** The name of the print job. */
-    private String name;
+    private final String name;
 
     /** The height of the print job in millimeters. */
-    private int height;
+    private final int height;
 
     /** The width of the print job in millimeters. */
-    private int width;
+    private final int width;
 
     /** The length of the print job in millimeters. */
-    private int length;
+    private final int length;
 
     /** The list of filament lengths required for the print job. */
-    private ArrayList<Double> filamentLength;
+    private final ArrayList<Double> filamentLength;
 
     /** The estimated time to complete the print job in minutes. */
-    private int printTime;
+    private final int printTime;
 
     /**
      * Constructs a new {@code Print} instance with the specified properties.
@@ -101,16 +101,34 @@ public class Print {
      * @return a new {@code Print} instance
      */
     public static Print fromMap(Map<String, Object> map) {
-        String name = String.valueOf(map.getOrDefault("name", map.getOrDefault("1", "unknown")));
-        int height = Integer.parseInt(String.valueOf(map.getOrDefault("height", map.getOrDefault("2", "0"))));
-        int width = Integer.parseInt(String.valueOf(map.getOrDefault("width", map.getOrDefault("3", "0"))));
-        int length = Integer.parseInt(String.valueOf(map.getOrDefault("length", map.getOrDefault("4", "0"))));
-        int printTime = Integer.parseInt((map.getOrDefault("printTime", map.getOrDefault("5", "0"))).toString());
+        String name = String.valueOf(
+                map.getOrDefault("name", map.getOrDefault("1", "unknown"))
+        );
+        int height = Integer.parseInt(String.valueOf(
+                map.getOrDefault("height", map.getOrDefault("2", "0")))
+        );
+        int width = Integer.parseInt(String.valueOf(
+                map.getOrDefault("width", map.getOrDefault("3", "0")))
+        );
+        int length = Integer.parseInt(String.valueOf(
+                map.getOrDefault("length", map.getOrDefault("4", "0")))
+        );
+        int printTime = Integer.parseInt(
+                (map.getOrDefault("printTime", map.getOrDefault("5", "0"))).toString()
+        );
 
-        ArrayList<Double> filamentLength = map.getOrDefault("filamentLength", map.getOrDefault("6", ""))
+        ArrayList<Double> filamentLength = map.getOrDefault("filamentLength", map.getOrDefault(
+                "6",
+                ""
+        ))
                 instanceof List
-                ? new ArrayList<>((List<Double>) map.getOrDefault("filamentLength", map.getOrDefault("6", new ArrayList<Double>())))
-                : new ArrayList<>(Arrays.stream(String.valueOf(map.getOrDefault("filamentLength", map.getOrDefault("6", "0"))).split(","))
+                ? new ArrayList<>((List<Double>) map.getOrDefault(
+                        "filamentLength",
+                map.getOrDefault("6", new ArrayList<Double>())
+        ))
+                : new ArrayList<>(Arrays.stream(String.valueOf(
+                        map.getOrDefault("filamentLength", map.getOrDefault("6", "0"))
+                ).split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .map(Double::parseDouble)

@@ -12,13 +12,13 @@ import java.util.List;
 public class PrintTask {
 
     /** The print associated with this task. */
-    private Print print;
+    private final Print print;
 
     /** The list of colors required for the print task. */
-    private List<String> colors;
+    private final List<String> colors;
 
     /** The type of filament used for the print task. */
-    private FilamentType filamentType;
+    private final FilamentType filamentType;
 
     /**
      * Constructs a new {@code PrintTask} with the specified print, colors, and filament type.

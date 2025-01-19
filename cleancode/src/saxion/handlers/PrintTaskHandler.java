@@ -4,7 +4,6 @@ import saxion.models.Print;
 import saxion.models.PrintTask;
 import saxion.models.Spool;
 import saxion.printers.Printer;
-import saxion.strategy.LessSpoolChanges;
 import saxion.strategy.PrintingStrategy;
 import saxion.types.FilamentType;
 

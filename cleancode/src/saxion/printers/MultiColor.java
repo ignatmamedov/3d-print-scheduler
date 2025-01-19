@@ -2,7 +2,6 @@ package saxion.printers;
 
 import saxion.facade.PrinterDTO;
 import saxion.facade.SpoolDTO;
-import saxion.models.Print;
 import saxion.models.Spool;
 
 import java.util.ArrayList;
@@ -34,7 +33,16 @@ public class MultiColor extends StandardFDM implements SpoolManager {
      * @param maxZ         the maximum height (Z dimension) in millimeters
      * @param maxColors    the maximum number of colors (spools) the printer can handle
      */
-    public MultiColor(int id, String printerName, String manufacturer, boolean isHoused, int maxX, int maxY, int maxZ, int maxColors) {
+    public MultiColor(
+            int id,
+            String printerName,
+            String manufacturer,
+            boolean isHoused,
+            int maxX,
+            int maxY,
+            int maxZ,
+            int maxColors
+    ) {
         super(id, printerName, manufacturer, isHoused, maxX, maxY, maxZ);
         this.maxColors = maxColors;
     }
@@ -51,7 +59,16 @@ public class MultiColor extends StandardFDM implements SpoolManager {
      * @param maxColors    the maximum number of colors (spools) the printer can handle
      * @param currentSpools the initial list of spools loaded into the printer
      */
-    public MultiColor(int id, String printerName, String manufacturer, int maxX, int maxY, int maxZ, int maxColors, List<Spool> currentSpools) {
+    public MultiColor(
+            int id,
+            String printerName,
+            String manufacturer,
+            int maxX,
+            int maxY,
+            int maxZ,
+            int maxColors,
+            List<Spool> currentSpools
+    ) {
         super(id, printerName, manufacturer, maxX, maxY, maxZ);
         this.maxColors = maxColors;
         this.currentSpools = currentSpools;

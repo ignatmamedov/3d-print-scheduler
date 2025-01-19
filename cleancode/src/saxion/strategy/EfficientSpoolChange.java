@@ -26,7 +26,12 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
      * @return a string containing the selected print task details or {@code null} if no task could be selected
      */
     @Override
-    public String selectPrintTask(Printer printer, List<PrintTask> pendingPrintTasks, List<Printer> printers, List<Spool> freeSpools) {
+    public String selectPrintTask(
+            Printer printer,
+            List<PrintTask> pendingPrintTasks,
+            List<Printer> printers,
+            List<Spool> freeSpools
+    ) {
         List<String> messages = new ArrayList<>();
 
         for (
@@ -51,8 +56,11 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
                 printer.setTask(printTask);
                 iterator.remove();
 
-                return String.join("\n", messages) + "\n- Started task: " + printTask.getPrint().getName() + " "
-                        + printTask.getFilamentType() + " on printer " + printer.getName();
+                return String.join("\n", messages)
+                        + "\n- Started task: " + printTask.getPrint().getName()
+                        + " "
+                        + printTask.getFilamentType() + " on printer "
+                        + printer.getName();
             }
         }
 
@@ -70,7 +78,11 @@ public class EfficientSpoolChange extends BasePrintingStrategy implements Printi
         if(!matchesCurrentPrinter(printer, printTask)){
             return null;
         }
-        double filamentLength = printTask.getPrint().getFilamentLength().stream().mapToDouble(Double::doubleValue).sum();
+        double filamentLength = printTask
+                .getPrint()
+                .getFilamentLength()
+                .stream()
+                .mapToDouble(Double::doubleValue).sum();
         return freeSpools.stream()
                 .filter(spool -> {
                     boolean matches = spool.getLength() >= filamentLength &&
